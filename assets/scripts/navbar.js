@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: block;
                 flex-grow: 1;
                 font-size: 14px;
-                font-family: "Source Serif 4", Georgia, sans-serif;
+                font-family: "Charter", Georgia, sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-size: 14px;
                 font-weight: 500;
                 color: #000;
-                font-family: "Source Serif 4", Georgia, sans-serif;
+                font-family: "Charter", Georgia, sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
