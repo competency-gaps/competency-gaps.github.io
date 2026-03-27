@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competency Gaps</title>
+    <meta name="description" content="We propose Competency Gaps (CG), a method that uses sparse autoencoders to automatically uncover imbalanced coverage of concepts within benchmarks and areas where LLMs systematically underperform.">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="all">
+    <meta content="en_EN" property="og:locale">
+    <meta content="website" property="og:type">
+    <meta content="https://competency-gaps.github.io" property="og:url">
+    <meta content="Uncovering Competency Gaps in Large Language Models and Their Benchmarks" property="og:title">
+    <meta content="We propose Competency Gaps (CG), a method that uses sparse autoencoders to automatically uncover imbalanced coverage of concepts within benchmarks and areas where LLMs systematically underperform." property="og:description">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="Uncovering Competency Gaps in Large Language Models and Their Benchmarks">
+
+    <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/main_free.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="clarity/clarity.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/foundation.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <script src="assets/scripts/navbar.js"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            "HTML-CSS": {
+              scale: 95,
+              fonts: ["Gyre-Pagella"],
+              imageFont: null,
+              undefinedFamily: "'Arial Unicode MS', cmbright"
+            },
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                processEscapes: true
+              }
+          });
+    </script>
+    <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body onload="if (document.activeElement) document.activeElement.blur();">
+
+    <script>
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0);
+        });
+    </script>
+
+    <!-- Title Page -->
+    <div class="container blog" id="first-content" style="background-color: #E0E4E6;">
+        <div class="blog-title no-cover">
+            <div class="blog-intro">
+                <div>
+                    <h1 class="title"><b>Uncovering Competency Gaps in Large Language Models and Their Benchmarks</b></h1>
+                    <p class="author">
+                        <a href="https://www.matyasbohacek.com">Matyas Bohacek</a> <sup>1,2</sup>, <a href="#">Nino Scherrer</a> <sup>2</sup>, <a href="#">Nicholas Dufour</a> <sup>2</sup>, <a href="#">Thomas Leung</a> <sup>2</sup>, <a href="#">Christoph Bregler</a> <sup>2</sup>, and <a href="#">Stephanie C. Y. Chan</a> <sup>2</sup>
+                    </p>
+                    <p class="author" style="padding-top: 0px;">
+                        <sup>1</sup> Stanford University &nbsp;&nbsp; <sup>2</sup> Google DeepMind
+                    </p>
+                    <p class="abstract">
+                        We propose Competency Gaps (CG), a method that uses sparse autoencoders (SAEs) to automatically uncover two types of gaps in LLM evaluation: <b>benchmark gaps</b>&mdash;imbalanced coverage of concepts within benchmarks&mdash;and <b>model gaps</b>&mdash;areas where LLMs systematically underperform. CG extracts SAE concept activations and computes saliency-weighted performance scores across benchmark data. Applied to Gemma2-2B and Llama3.1-8B across ten benchmarks, our analysis reveals that models consistently underperform on concepts contrasting with sycophantic behaviors and safety-related concepts, while benchmarks over-represent concepts related to obedience and instruction-following.
+                    </p>
+
+                    <div class="info">
+                        <div>
+                            <a href="https://competency-gaps.github.io/paper/paper.pdf" class="button icon" style="background-color: rgba(255, 255, 255, 0.2);"> Paper <i class="fa-solid fa-book-open"></i></a> &nbsp;&nbsp;
+                            <a href="https://github.com/maty-bohacek/competency-gaps" class="button icon" style="background-color: rgba(255, 255, 255, 0.2);">Code <i class="fa-solid fa-code"></i></a> &nbsp;&nbsp;
+                            <a href="#" class="button icon" style="background-color: rgba(255, 255, 255, 0.2);">Demo <i class="fa-solid fa-globe"></i></a> &nbsp;&nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container blog main first" id="blog-main">
+
+        <fieldset class="insights-box">
+            <legend>Key Takeaways</legend>
+            <ul style="margin-left: 1.5em; margin-bottom: 0;">
+                <li style="margin-bottom: 0.8em;"><b>LLM benchmarks have systematic coverage gaps.</b> Individual benchmarks miss 30%+ of SAE concepts, and many miss concepts central to their intended evaluation scope (e.g., AGIEval lacks concepts about thorough evidence assessment).</li>
+                <li style="margin-bottom: 0.8em;"><b>Models excel at sycophancy but struggle with its opposite.</b> LLMs consistently underperform on concepts involving polite rejection of inappropriate requests and setting professional boundaries, while excelling at helpful and agreeable behaviors.</li>
+                <li style="margin-bottom: 0.8em;"><b>Sparse autoencoders enable automated, unsupervised gap discovery.</b> By grounding evaluation in the model's own internal representations, CG provides interpretable and actionable diagnostics without requiring manual concept annotation.</li>
+            </ul>
+        </fieldset>
+
+        <p class='text'>
+            Uniform aggregation of benchmark scores into single metrics obscures important sub-trends and model weaknesses. For example, the MATH benchmark shows topic-wise accuracy scores ranging from 27% to 74% despite an overall score of 54%. Current semantic annotations of benchmark data are coarse-grained, manually curated, and difficult to scale.
+        </p>
+        <p class='text'>
+            To address this, we propose <b>Competency Gaps (CG)</b>, a method that leverages sparse autoencoders (SAEs) to systematically uncover gaps in both benchmarks and models. Rather than relying on human-defined categories, CG extracts concepts directly from the model's internal representations, providing a granular, unsupervised view of evaluation coverage and model performance.
+        </p>
+    </div>
+
+    <div class="container blog main">
+
+        <h1>Method</h1>
+
+        <p class="text">
+            Our method introduces metrics for both benchmark and model evaluation grounded in SAE concept activations. For each concept $c$ in the SAE dictionary, we compute:
+        </p>
+
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text"><b>Benchmark coverage ($\chi_{\text{bench}}$):</b> Quantifies how well a concept is represented across benchmark data. We classify concepts as <em>missing</em>, <em>underrepresented</em>, or <em>overrepresented</em> based on their activation scores across individual and cross-benchmark analyses.</p></li>
+            <li><p class="text"><b>Model performance ($\chi_{\text{model}}$):</b> A saliency-weighted performance score that measures how well the model handles each concept. By weighting by saliency, we focus on concepts that are most relevant to the model's decision-making process.</p></li>
+        </ul>
+
+        <p class="text">
+            Applied together, these metrics reveal which concepts benchmarks fail to evaluate (benchmark gaps) and which concepts models fail to handle correctly (model gaps).
+        </p>
+
+    </div>
+
+    <div class="container blog main">
+
+        <h1>Experimental Setup</h1>
+
+        <p class="text">
+            We analyze two popular open-source instruction-tuned models across ten benchmarks spanning five evaluation categories:
+        </p>
+
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text"><b>Models:</b> Llama3.1-8B-Instruct (with Goodfire SAE, layer 19) and Gemma2-2B-Instruct (with Gemma Scope SAE, layer 20).</p></li>
+            <li><p class="text"><b>Factuality:</b> Natural Questions, Vectara.</p></li>
+            <li><p class="text"><b>Math:</b> GSM8K, MATH.</p></li>
+            <li><p class="text"><b>Reasoning:</b> AGI Eval, LogicBench, SocialIQA, WinoGrande.</p></li>
+            <li><p class="text"><b>Ethics &amp; Bias:</b> BBQ, CrowS-Pairs.</p></li>
+            <li><p class="text"><b>Arena Style:</b> LMSYS Chatbot Arena.</p></li>
+        </ul>
+
+    </div>
+
+    <div class="container blog main">
+
+        <h1>Benchmark Gaps</h1>
+
+        <p class="text">
+            Cross-benchmark concept coverage exhibits a strong left skew: most concepts have low coverage across the benchmark suite. Our analysis reveals:
+        </p>
+
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text"><b>314 concepts (1%) are entirely missing</b> from the benchmark suite, including concepts related to AI meta-cognition, roleplay boundaries, and user input meta-discussion.</p></li>
+            <li><p class="text"><b>Individual benchmarks miss 30%+ of SAE concepts,</b> and many miss concepts that are central to their intended evaluation scope. For instance, AGIEval lacks concepts about "the need for thorough and objective assessment of evidence," and SocialIQA misses "instructions about how someone should behave or what qualities to embody."</p></li>
+            <li><p class="text"><b>Overrepresented concepts</b> include English Premier League football discussions and conversation/topic boundary markers&mdash;artifacts of data collection rather than intentional evaluation targets.</p></li>
+        </ul>
+
+    </div>
+
+    <div class="container blog main">
+
+        <h1>Model Gaps</h1>
+
+        <p class="text">
+            The model gap analysis reveals a striking pattern in where LLMs excel and where they struggle:
+        </p>
+
+        <h2>Best-Performing Concepts</h2>
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text">Coding and data handling tasks (e.g., iteration/traversal in programming)</p></li>
+            <li><p class="text">Helpful and agreeable behaviors (e.g., providing examples, commitment to help)</p></li>
+            <li><p class="text">Positive sentiments toward the user</p></li>
+        </ul>
+
+        <h2>Worst-Performing Concepts</h2>
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text">Polite rejection of inappropriate requests</p></li>
+            <li><p class="text">Setting professional boundaries</p></li>
+            <li><p class="text">Handling challenging or adversarial requests</p></li>
+            <li><p class="text">Time representations and palindromes/letter reasoning</p></li>
+            <li><p class="text">Intuitive understanding and ease of use</p></li>
+        </ul>
+
+        <p class="text">
+            A key insight is that models excel at sycophantic behaviors but consistently struggle with their opposites&mdash;rejection, boundary-setting, and pushback. This suggests a systematic bias in how models are trained and evaluated.
+        </p>
+
+    </div>
+
+    <div class="container blog main">
+        <h1>Robustness</h1>
+
+        <p class="text">
+            We validate the robustness of our method through several analyses:
+        </p>
+
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text"><b>SAE generalization:</b> Model-specific SAEs are not strictly necessary; different SAEs yield similar results, demonstrating that findings are not artifacts of a particular SAE choice.</p></li>
+            <li><p class="text"><b>Stability:</b> CG scores are stable under random subsampling (std dev: 0.014 for $\chi_{\text{model}}$, 0.025 for $\chi_{\text{bench}}$).</p></li>
+            <li><p class="text"><b>Adversarial ablation:</b> Removing 1% of data aligned with top/bottom-performing concepts predictably changes overall performance (0.6% decrease and 1.3% increase, respectively), confirming that identified gaps correspond to meaningful performance variation.</p></li>
+        </ul>
+
+    </div>
+
+    <div class="container blog main">
+
+        <h1>Interactive Exploration Tool</h1>
+
+        <p class="text">
+            We release an open-source interactive web application for exploring competency gaps across concepts, benchmarks, and models. The tool features a searchable concept overview with expandable details, per-benchmark performance visualization, example data points showing high and low performance, and cross-benchmark correlation analysis.
+        </p>
+
+        <p class="text">
+            To perform the competency gaps analysis on your own model and generate the same visualization, follow our <a href="https://github.com/maty-bohacek/competency-gaps">open-source codebase</a>.
+        </p>
+
+    </div>
+
+    <div class="container blog main">
+
+        <h1>Downstream Applications</h1>
+
+        <p class="text">
+            The CG method enables several practical workflows:
+        </p>
+
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text"><b>Benchmark search and selection:</b> Inform users which benchmarks to use for desired concept coverage.</p></li>
+            <li><p class="text"><b>Targeted benchmark creation:</b> Use underrepresented concepts to guide synthetic data generation for more balanced evaluation.</p></li>
+            <li><p class="text"><b>Model auditing:</b> Systematically identify model weaknesses before deployment.</p></li>
+        </ul>
+
+    </div>
+
+    <div class="container blog main">
+        <h1>Citation</h1>
+<pre><code class="plaintext">@article{bohacek2025uncovering,
+  title={Uncovering Competency Gaps in Large Language Models and Their Benchmarks},
+  author={Bohacek, Matyas and Scherrer, Nino and Dufour, Nicholas and Leung, Thomas and Bregler, Christoph and Chan, Stephanie C. Y.},
+  year={2025}
+}</code></pre>
+    </div>
+
+    <!-- Footer Page -->
+    <footer>
+        <div class="container">
+            <p style="font-size: small;">
+                Last updated March 2025. This website is built on the <a href="https://shikun.io/projects/clarity" style="font-size: small;">Clarity Template</a>.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="clarity/clarity.js"></script>
+</body>
+</html>

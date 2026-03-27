@@ -1,0 +1,1 @@
+/* Clarity Template - minimal JS */
