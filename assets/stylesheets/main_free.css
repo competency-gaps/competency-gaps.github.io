@@ -881,8 +881,8 @@ button, .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7em;
-  font-weight: 700;
+  font-size: 0.65em;
+  font-weight: 500;
   font-family: "HelveticaNeue", sans-serif;
   letter-spacing: 0.075em;
   text-decoration: none;
