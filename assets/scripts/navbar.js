@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: block;
                 flex-grow: 1;
                 font-size: 14px;
-                font-family: "Charter", Georgia, sans-serif;
+                font-family: "HelveticaNeue", sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -101,6 +101,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             .nav-header {
                 display: none !important;
+            }
+
+            @media (min-width: 768px) {
+                .nav-header {
+                    display: none;
+                }
             }
 
             .nav-list {
@@ -166,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-size: 14px;
                 font-weight: 500;
                 color: #000;
-                font-family: "Charter", Georgia, sans-serif;
+                font-family: "HelveticaNeue", sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
