@@ -444,7 +444,7 @@ div.container.blog ul, div.container.blog ol {
   padding: 0;
 }
 div.container.blog ul li p.text, div.container.blog ol li p.text {
-  padding: 0vh 0 1vh 0 !important;
+  padding: 0vh 0 1.5vh 0 !important;
 }
 div.container.blog p.caption {
   padding: 1vh 0;
@@ -1243,7 +1243,279 @@ h1, h2, h3, h4, h5, h6, p, a, code, pre, ol, ul, li {
   line-height: 1.5;
 }
 
-/* ======================== Key Insights Box ===================== */
+@media screen and (max-width: 769px) {
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 15px;
+  }
+  h1 {
+    font-size: 24px;
+    line-height: 1.2;
+    padding: 1.5vh 0;
+    font-weight: 600;
+  }
+  h1.title {
+    font-weight: 400;
+    letter-spacing: 0px;
+    font-size: 26px;
+  }
+  h2 {
+    line-height: 1.2;
+    padding: 1.5vh 0;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  h3 {
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 1.5vh 0;
+    font-size: 17px;
+  }
+}
+@media screen and (min-width: 769px) {
+  .container {
+    padding-right: calc(8.5vw - (100vw - 100%));
+    padding-left: 8.5vw;
+  }
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 16px;
+  }
+  h1 {
+    font-size: 24px;
+    line-height: 1.2;
+    padding: 2vh 0;
+    font-weight: 600;
+  }
+  h1.title {
+    padding: 0 0 1vh;
+    font-weight: 400;
+    letter-spacing: 0px;
+    font-size: 26px;
+  }
+  h2 {
+    line-height: 1.2;
+    padding: 2vh 0;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  h3 {
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 2vh 0;
+    font-size: 17px;
+  }
+}
+@media screen and (min-width: 992px) {
+  .container {
+    padding-right: calc(12vw - (100vw - 100%));
+    padding-left: 12vw;
+  }
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 17px;
+  }
+  h1 {
+    font-size: 24px;
+    line-height: 1.2;
+    padding: 1vh 0;
+  }
+  h1.title {
+    padding: 0 0 1vh;
+    font-size: 26px;
+  }
+  h2 {
+    padding: 1vh 0;
+    font-size: 18px;
+  }
+  h3 {
+    padding: 1vh 0;
+    font-size: 17px;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .container {
+    padding-right: calc(15vw - (100vw - 100%));
+    padding-left: 15vw;
+  }
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 18px;
+  }
+  h1 {
+    font-size: 26px;
+    line-height: 1.2;
+    padding: 1vh 0;
+  }
+  h1.title {
+    padding: 0 0 1vh;
+    font-size: 30px;
+  }
+  h2 {
+    padding: 1vh 0;
+    font-size: 20px;
+  }
+  h3 {
+    padding: 1vh 0;
+    font-size: 18px;
+  }
+}
+@media screen and (min-width: 1600px) {
+  .container {
+    padding-right: calc(18vw - (100vw - 100%));
+    padding-left: 18vw;
+  }
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 20px;
+  }
+  h1 {
+    font-size: 30px;
+    line-height: 1.2;
+    padding: 1.75vh 0;
+  }
+  h1.title {
+    padding: 0 0 1vh;
+    font-size: 36px;
+  }
+  h2 {
+    padding: 1.5vh 0;
+    font-size: 22px;
+  }
+  h3 {
+    padding: 1.5vh 0;
+    font-size: 20px;
+  }
+}
+@media screen and (min-width: 2000px) {
+  .container {
+    padding-right: calc(22vw - (100vw - 100%));
+    padding-left: 22vw;
+  }
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 20px;
+  }
+  h1 {
+    font-size: 30px;
+    line-height: 1.2;
+    padding: 1.75vh 0;
+  }
+  h1.title {
+    padding: 0 0 1vh;
+    font-size: 36px;
+  }
+  h2 {
+    padding: 1.5vh 0;
+    font-size: 24px;
+  }
+  h3 {
+    padding: 1.5vh 0;
+    font-size: 18px;
+  }
+}
+@media screen and (min-width: 2400px) {
+  .container {
+    padding-right: calc(24vw - (100vw - 100%));
+    padding-left: 24vw;
+  }
+  a, p, td, th, tr, code, pre, ol, ul, li, div {
+    font-size: 22px;
+  }
+  h1 {
+    font-size: 30px;
+    line-height: 1.2;
+    padding: 1.75vh 0;
+  }
+  h1.title {
+    padding: 0 0 1vh;
+    font-size: 36px;
+  }
+  h2 {
+    padding: 1.5vh 0;
+    font-size: 24px;
+  }
+  h3 {
+    padding: 1.5vh 0;
+    font-size: 20px;
+  }
+}
+@media screen and (min-width: 3200px) {
+  .container {
+    padding-right: calc(32vw - (100vw - 100%));
+    padding-left: 28vw;
+  }
+}
+footer p {
+  font-family: "Charter";
+}
+
+/* ======================== Blog ===================== */
+div.container.blog#first-content div.blog-title .blog-intro p.author {
+  padding: 4px 0 10px;
+  font-family: "Charter";
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.2;
+  font-size: 85%;
+}
+div.container.blog#first-content div.blog-title .blog-intro p.abstract {
+  font-family: "Charter";
+  font-weight: 400;
+  padding: 1vh 0;
+  font-size: 85%;
+  line-height: 1.6;
+}
+div.container.blog#first-content div.blog-title .blog-intro .info p {
+  text-transform: uppercase;
+  color: #353535;
+  font-weight: 500;
+  font-size: 85%;
+}
+
+div.container.blog p.text {
+  padding: 1.5vh 0;
+  font-family: "Charter", sans-serif;
+}
+div.container.blog p.text:last-child {
+  padding-bottom: 0;
+}
+div.container.blog ul li p.text, div.container.blog ol li p.text {
+  padding: 0vh 0 1vh 0 !important;
+}
+div.container.blog p.caption {
+  padding: 1vh 0;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0px;
+  font-size: 70%;
+}
+div.container.blog p.caption b {
+  font-weight: 600 !important;
+}
+
+/* ======================== Button ===================== */
+
+input[type=submit], input[type=reset], input[type=button],
+button, .button {
+  font-size: 0.65em;
+  font-weight: 500;
+}
+
+/* ======================== Table ===================== */
+table th b, table td b {
+  font-weight: 700;
+}
+table thead {
+  font-weight: 500;
+}
+
+/* ======================== Selection ===================== */
+select {
+  padding: 2px 2px;
+}
+
+/* ======================== Slider Display ===================== */
+.before figcaption,
+.after figcaption {
+  font-size: 70%;
+}
+
+/* ======================== Key Takeaways Box ===================== */
 .insights-box {
   border: 2px solid #c6c6c6;
   border-radius: 8px;
