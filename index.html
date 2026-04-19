@@ -21,6 +21,20 @@
     <link rel="stylesheet" type="text/css" media="all" href="clarity/clarity.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/foundation.min.css">
     <link href="assets/fontawesome-free-6.6.0-web/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        tt, code, kbd, samp {
+            font-family: 'Inconsolata', 'Consolas', 'Menlo', monospace;
+            font-size: 1.1em;
+            font-feature-settings: "liga" 0, "calt" 0;
+        }
+        tt {
+            background: none;
+            padding: 0;
+        }
+    </style>
     <script src="assets/scripts/navbar.js"></script>
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
@@ -63,7 +77,7 @@
                         <sup>1</sup> Stanford University &nbsp;&nbsp; <sup>2</sup> Google DeepMind
                     </p>
                     <p class="abstract">
-                        We propose Competency Gaps (CG), a method that uses sparse autoencoders (SAEs) to automatically uncover two types of gaps in LLM evaluation: <b>benchmark gaps</b>&mdash;imbalanced coverage of concepts within benchmarks&mdash;and <b>model gaps</b>&mdash;areas where LLMs systematically underperform. CG extracts SAE concept activations and computes saliency-weighted performance scores across benchmark data. Applied to Gemma2-2B and Llama3.1-8B across ten benchmarks, our analysis reveals that models consistently underperform on concepts contrasting with sycophantic behaviors and safety-related concepts, while benchmarks over-represent concepts related to obedience and instruction-following.
+                        We propose Competency Gaps (CG), a method that uses sparse autoencoders (SAEs) to automatically uncover two types of gaps in LLM evaluation: <b>benchmark gaps</b>&mdash;imbalanced coverage of concepts within benchmarks&mdash;and <b>model gaps</b>&mdash;areas where LLMs systematically underperform. CG extracts SAE concept activations and computes saliency-weighted performance scores across benchmark data. Applied to <tt>Gemma2-2B</tt> and <tt>Llama3.1-8B</tt> across ten benchmarks, our analysis reveals that models consistently underperform on concepts contrasting with sycophantic behaviors and safety-related concepts, while benchmarks over-represent concepts related to obedience and instruction-following.
                     </p>
 
                     <div class="info" style="margin-top: 1.2em;">
