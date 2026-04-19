@@ -52,12 +52,12 @@
 
     <!-- Title Page -->
     <div class="container blog" id="first-content" style="background-color: #E0E4E6;">
-        <div class="blog-title no-cover">
+        <div class="blog-title">
             <div class="blog-intro">
                 <div>
                     <h1 class="title" style="font-weight: 800;"><b style="font-weight: 800;">Uncovering Competency Gaps in Large Language Models and Their Benchmarks</b></h1>
                     <p class="author">
-                        <a href="https://www.matyasbohacek.com">Matyas Bohacek</a> <sup>1,2</sup>, <a href="#">Nino Scherrer</a> <sup>2</sup>, <a href="#">Nicholas Dufour</a> <sup>2</sup>, <a href="#">Thomas Leung</a> <sup>2</sup>, <a href="#">Christoph Bregler</a> <sup>2</sup>, and <a href="#">Stephanie C. Y. Chan</a> <sup>2</sup>
+                        <a href="https://www.matybohacek.com">Maty Bohacek</a><sup>1,2</sup>, <a href="#">Nino Scherrer</a><sup>2</sup>, <a href="#">Nicholas Dufour</a><sup>2</sup>, <a href="#">Thomas Leung</a><sup>2</sup>, <a href="#">Christoph Bregler</a><sup>2</sup>, and <a href="#">Stephanie C. Y. Chan</a><sup>2</sup>
                     </p>
                     <p class="author" style="padding-top: 0px;">
                         <sup>1</sup> Stanford University &nbsp;&nbsp; <sup>2</sup> Google DeepMind
@@ -66,13 +66,19 @@
                         We propose Competency Gaps (CG), a method that uses sparse autoencoders (SAEs) to automatically uncover two types of gaps in LLM evaluation: <b>benchmark gaps</b>&mdash;imbalanced coverage of concepts within benchmarks&mdash;and <b>model gaps</b>&mdash;areas where LLMs systematically underperform. CG extracts SAE concept activations and computes saliency-weighted performance scores across benchmark data. Applied to Gemma2-2B and Llama3.1-8B across ten benchmarks, our analysis reveals that models consistently underperform on concepts contrasting with sycophantic behaviors and safety-related concepts, while benchmarks over-represent concepts related to obedience and instruction-following.
                     </p>
 
-                    <div class="info">
+                    <div class="info" style="margin-top: 1.2em;">
                         <div>
-                            <a href="https://competency-gaps.github.io/paper/paper.pdf" class="button icon" style="background-color: rgba(255, 255, 255, 0.2);"> Paper <i class="fa-solid fa-book-open"></i></a> &nbsp;&nbsp;
-                            <a href="https://github.com/maty-bohacek/competency-gaps" class="button icon" style="background-color: rgba(255, 255, 255, 0.2);">Code <i class="fa-solid fa-code"></i></a> &nbsp;&nbsp;
-                            <a href="#" class="button icon" style="background-color: rgba(255, 255, 255, 0.2);">Demo <i class="fa-solid fa-globe"></i></a> &nbsp;&nbsp;
+                            <a href="https://competency-gaps.github.io/paper/paper.pdf" class="button icon" style="background-color: rgba(255, 255, 255, 0.45); box-shadow: 0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);"> Paper <i class="fa-solid fa-book-open"></i></a>  &nbsp;&nbsp; 
+                            <a href="https://github.com/maty-bohacek/competency-gaps" class="button icon" style="background-color: rgba(255, 255, 255, 0.45); box-shadow: 0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);">Code <i class="fa-solid fa-code"></i></a>  &nbsp;&nbsp; 
+                            <a href="concept_performance_map.html" class="button icon" style="background-color: rgba(255, 255, 255, 0.45); box-shadow: 0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);">Demo <i class="fa-solid fa-globe"></i></a>  &nbsp;&nbsp; 
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="blog-cover" style="width: 100% !important; overflow: hidden; align-items: stretch;">
+                <div style="width: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6); aspect-ratio: 5 / 4;">
+                    <iframe src="concept_performance_map.html" title="Concept Performance Map (interactive demo)" loading="lazy" scrolling="no" style="border: none !important; outline: none !important; box-shadow: none !important; display: block; width: 100%; height: 100%;"></iframe>
                 </div>
             </div>
         </div>
@@ -238,8 +244,8 @@
     <!-- Footer Page -->
     <footer>
         <div class="container">
-            <p style="font-size: small;">
-                Last updated March 2025. This website is built on the <a href="https://shikun.io/projects/clarity" style="font-size: small;">Clarity Template</a>.
+            <p style="font-size: small; text-align: center;">
+                Last updated April 2026. This website is built on the <a href="https://shikun.io/projects/clarity" style="font-size: small;">Clarity Template</a>.
             </p>
         </div>
     </footer>

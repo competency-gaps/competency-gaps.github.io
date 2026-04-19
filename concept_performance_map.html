@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Concept Performance Map</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: #111111;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    min-height: 100vh;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  /* ---------- Top controls: mode toggle + evaluating pill ---------- */
+  .top-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mode-toggle, .evaluating {
+    height: 34px;
+    width: 280px;
+  }
+
+  .mode-toggle {
+    display: inline-flex;
+    align-items: stretch;
+    background: #f1f1f1;
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 0;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0 14px;
+    border: none;
+    background: transparent;
+    color: #6a6a6a;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    letter-spacing: 0.05px;
+  }
+  .mode-btn:hover:not(.active) {
+    color: #222;
+  }
+  .mode-btn.active {
+    background: #ffffff;
+    color: #111;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03);
+  }
+  .mode-btn:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  .evaluating {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 14px;
+    font-size: 12px;
+    color: #555;
+    background: #f5f5f5;
+    border-radius: 999px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .evaluating-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    flex-shrink: 0;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.45; transform: scale(0.82); }
+  }
+  #evaluatingValue {
+    font-weight: 600;
+    color: #111;
+  }
+
+  /* ---------- Visualization area ---------- */
+  .viz-container {
+    position: relative;
+    width: 700px;
+    height: 380px;
+    max-width: 100%;
+    user-select: none;
+  }
+  .viz-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .cluster-path {
+    fill: none;
+    stroke: #bcbcbc;
+    stroke-width: 1.6;
+    stroke-dasharray: 6 4.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .dot {
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(.2,.9,.3,1.2), filter 0.18s ease, fill 0.35s ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.14));
+  }
+  .dot:hover {
+    transform: scale(1.18);
+    filter: drop-shadow(0 7px 12px rgba(0,0,0,0.24));
+  }
+  .dot.selected {
+    transform: scale(1.18);
+    filter: drop-shadow(0 7px 12px rgba(0,0,0,0.28));
+  }
+
+  /* ---------- Connector ribbon ---------- */
+  .connector {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+  }
+  .connector.visible { opacity: 1; }
+  #connectorFill {
+    fill: #ffffff;
+    stroke: none;
+  }
+  #connectorStroke {
+    fill: none;
+    stroke: #959595;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+  }
+
+  /* ---------- Detail card ---------- */
+  .card {
+    position: absolute;
+    background: #ffffff;
+    border: 1.8px solid #111111;
+    border-radius: 12px;
+    padding: 12px;
+    width: 260px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 10;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+  }
+  .card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .card .concept-name {
+    font-family: 'Menlo', 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    margin: 2px 0 9px;
+    letter-spacing: 0.2px;
+  }
+  .card .overall {
+    border: 1.6px solid #111111;
+    border-radius: 9px;
+    padding: 10px 8px 9px;
+    text-align: center;
+    margin-bottom: 7px;
+  }
+  .card .overall .num {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .card .overall .label {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .card .benchmarks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  .card .bm {
+    border: 1.6px solid #111111;
+    border-radius: 9px;
+    padding: 8px 6px 7px;
+    text-align: center;
+  }
+  .card .bm .num {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 3px;
+    letter-spacing: -0.3px;
+  }
+  .card .bm .label {
+    font-size: 11px;
+  }
+
+  /* ---------- Hint ---------- */
+  .hint {
+    font-size: 12px;
+    color: #111111;
+    margin: 0;
+    letter-spacing: 0.1px;
+    text-align: center;
+  }
+
+  /* ---------- Legend (compact) ---------- */
+  .legend {
+    text-align: center;
+    width: 100%;
+    max-width: 380px;
+  }
+  .legend h3 {
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.1px;
+  }
+  .legend .scale {
+    background: #f1f1f1;
+    border-radius: 12px;
+    padding: 8px 10px 10px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .legend .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend .chip {
+    width: 100%;
+    height: 22px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+    transition: background 0.35s ease;
+  }
+  .legend .lbl {
+    font-size: 10.5px;
+    color: #1a1a1a;
+  }
+
+  @media (max-width: 720px) {
+    .viz-container { width: 100%; height: auto; aspect-ratio: 700 / 380; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="top-controls">
+    <div class="mode-toggle" role="group" aria-label="Gap analysis mode">
+      <button class="mode-btn active" data-mode="model"     aria-pressed="true">Model Gaps</button>
+      <button class="mode-btn"        data-mode="benchmark" aria-pressed="false">Benchmark Gaps</button>
+    </div>
+    <div class="evaluating" role="status" aria-live="polite">
+      <span class="evaluating-dot" aria-hidden="true"></span>
+      <span>Evaluating: <span id="evaluatingValue">Llama 3 8B-IT</span></span>
+    </div>
+  </div>
+
+  <div class="viz-container" id="vizContainer">
+    <svg class="viz-svg" viewBox="0 0 700 380" id="viz" preserveAspectRatio="xMidYMid meet">
+      <g id="clusters"></g>
+      <g id="dots"></g>
+      <g class="connector" id="connector">
+        <path id="connectorFill" d="" />
+        <path id="connectorStroke" d="" />
+      </g>
+      <g id="selectedDotLayer"></g>
+    </svg>
+    <div class="card" id="card" role="dialog" aria-live="polite">
+      <div class="concept-name" id="conceptName"></div>
+      <div class="overall">
+        <div class="num" id="overallScore"></div>
+        <div class="label" id="overallLabel"><i>&chi;</i><sub>model</sub></div>
+      </div>
+      <div class="benchmarks" id="benchmarks"></div>
+    </div>
+  </div>
+
+  <p class="hint">Each dot represents an SAE concept. Click a concept to inspect its breakdown.</p>
+
+  <div class="legend">
+    <h3 id="legendTitle">Model Performance</h3>
+    <div class="scale" id="legendScale"></div>
+  </div>
+
+<script>
+  // ==================== Mode configuration ====================
+  const MODE_INFO = {
+    model: {
+      label: 'Llama 3 8B-IT',
+      legendTitle: 'Model Performance',
+      overallLabel: '<i>&chi;</i><sub>model</sub>',
+      levels: ['very poor', 'poor', 'medium', 'good', 'very good'],
+      colors: {
+        'very poor': '#d6453a',
+        'poor':      '#ea7d4b',
+        'medium':    '#f5c078',
+        'good':      '#93d568',
+        'very good': '#2fa651'
+      }
+    },
+    benchmark: {
+      label: 'Custom benchmark suite (8)',
+      legendTitle: 'Coverage Intensity',
+      overallLabel: '<i>&chi;</i><sub>bench</sub>',
+      levels: ['very low', 'low', 'medium', 'high', 'very high'],
+      colors: {
+        'very low':  '#e0e0e0',
+        'low':       '#b0b0b0',
+        'medium':    '#808080',
+        'high':      '#505050',
+        'very high': '#1f1f1f'
+      }
+    }
+  };
+
+  const VIEWBOX = { w: 700, h: 380 };
+  const DOT_R = 18;
+  const CLUSTER_PADDING = 28;
+  const CARD_CORNER_RADIUS = 12;
+  // Must be >= the longest CSS transition on the fading elements (.connector, .card, .dot
+  // are all ~180ms). Set slightly higher so the dot is definitely still in the front
+  // layer while the connector finishes fading.
+  const DESELECT_RETURN_DELAY_MS = 220;
+
+  let currentMode = 'model';
+
+  // ==================== Dot data ====================
+  const dots = [
+    { id: 1, x: 173, y: 145, concept: 'idiom interpretation',
+      modelGaps: {
+        perf: 'good', overall: 0.681,
+        bench: { 'Toxicity': 0.794, 'AGI Eval': 0.452, 'GSM8K': 0.612, 'MATH': 0.287, 'BBQ': 0.883, 'WinoG': 0.821 }
+      },
+      benchmarkGaps: {
+        perf: 'medium', overall: 0.423,
+        bench: { 'MMLU': 0.521, 'HellaSwag': 0.687, 'ARC': 0.398, 'GSM8K': 0.234, 'HumanEval': 0.087, 'TruthfulQA': 0.445, 'XSum': 0.478, 'SQuAD': 0.512 }
+      }},
+    { id: 2, x: 258, y: 90, concept: 'grammar parsing',
+      modelGaps: {
+        perf: 'very good', overall: 0.847,
+        bench: { 'Toxicity': 0.905, 'AGI Eval': 0.682, 'GSM8K': 0.794, 'MATH': 0.541, 'BBQ': 0.956, 'WinoG': 0.911 }
+      },
+      benchmarkGaps: {
+        perf: 'high', overall: 0.762,
+        bench: { 'MMLU': 0.824, 'HellaSwag': 0.681, 'ARC': 0.791, 'GSM8K': 0.654, 'HumanEval': 0.583, 'TruthfulQA': 0.812, 'XSum': 0.784, 'SQuAD': 0.832 }
+      }},
+    { id: 3, x: 343, y: 62, concept: 'factual recall',
+      modelGaps: {
+        perf: 'very good', overall: 0.812,
+        bench: { 'Toxicity': 0.872, 'AGI Eval': 0.646, 'GSM8K': 0.738, 'MATH': 0.497, 'BBQ': 0.934, 'WinoG': 0.883 }
+      },
+      benchmarkGaps: {
+        perf: 'very high', overall: 0.884,
+        bench: { 'MMLU': 0.941, 'HellaSwag': 0.824, 'ARC': 0.887, 'GSM8K': 0.712, 'HumanEval': 0.623, 'TruthfulQA': 0.921, 'XSum': 0.863, 'SQuAD': 0.915 }
+      }},
+    { id: 4, x: 493, y: 128, concept: 'coding syntax',
+      modelGaps: {
+        perf: 'good', overall: 0.672,
+        bench: { 'Toxicity': 0.819, 'AGI Eval': 0.314, 'GSM8K': 0.571, 'MATH': 0.209, 'BBQ': 0.917, 'WinoG': 0.845 }
+      },
+      benchmarkGaps: {
+        perf: 'low', overall: 0.343,
+        bench: { 'MMLU': 0.381, 'HellaSwag': 0.284, 'ARC': 0.312, 'GSM8K': 0.482, 'HumanEval': 0.912, 'TruthfulQA': 0.221, 'XSum': 0.278, 'SQuAD': 0.329 }
+      }},
+    { id: 5, x: 426, y: 220, concept: 'entity recognition',
+      modelGaps: {
+        perf: 'good', overall: 0.709,
+        bench: { 'Toxicity': 0.847, 'AGI Eval': 0.488, 'GSM8K': 0.622, 'MATH': 0.314, 'BBQ': 0.894, 'WinoG': 0.841 }
+      },
+      benchmarkGaps: {
+        perf: 'medium', overall: 0.584,
+        bench: { 'MMLU': 0.621, 'HellaSwag': 0.514, 'ARC': 0.603, 'GSM8K': 0.342, 'HumanEval': 0.291, 'TruthfulQA': 0.651, 'XSum': 0.723, 'SQuAD': 0.771 }
+      }},
+    { id: 6, x: 526, y: 252, concept: 'sentiment polarity',
+      modelGaps: {
+        perf: 'very good', overall: 0.824,
+        bench: { 'Toxicity': 0.891, 'AGI Eval': 0.654, 'GSM8K': 0.748, 'MATH': 0.509, 'BBQ': 0.947, 'WinoG': 0.896 }
+      },
+      benchmarkGaps: {
+        perf: 'low', overall: 0.391,
+        bench: { 'MMLU': 0.412, 'HellaSwag': 0.521, 'ARC': 0.283, 'GSM8K': 0.187, 'HumanEval': 0.124, 'TruthfulQA': 0.481, 'XSum': 0.451, 'SQuAD': 0.423 }
+      }},
+    { id: 7, x: 316, y: 178, concept: 'discourse coherence',
+      modelGaps: {
+        perf: 'medium', overall: 0.543,
+        bench: { 'Toxicity': 0.702, 'AGI Eval': 0.312, 'GSM8K': 0.468, 'MATH': 0.182, 'BBQ': 0.773, 'WinoG': 0.721 }
+      },
+      benchmarkGaps: {
+        perf: 'medium', overall: 0.512,
+        bench: { 'MMLU': 0.524, 'HellaSwag': 0.591, 'ARC': 0.442, 'GSM8K': 0.384, 'HumanEval': 0.312, 'TruthfulQA': 0.564, 'XSum': 0.624, 'SQuAD': 0.582 }
+      }},
+    { id: 8, x: 243, y: 218, concept: 'metaphor resolution',
+      modelGaps: {
+        perf: 'poor', overall: 0.412,
+        bench: { 'Toxicity': 0.571, 'AGI Eval': 0.211, 'GSM8K': 0.342, 'MATH': 0.117, 'BBQ': 0.644, 'WinoG': 0.587 }
+      },
+      benchmarkGaps: {
+        perf: 'very low', overall: 0.142,
+        bench: { 'MMLU': 0.181, 'HellaSwag': 0.221, 'ARC': 0.091, 'GSM8K': 0.053, 'HumanEval': 0.041, 'TruthfulQA': 0.154, 'XSum': 0.173, 'SQuAD': 0.132 }
+      }},
+    { id: 9, x: 203, y: 298, concept: 'causal inference',
+      modelGaps: {
+        perf: 'very poor', overall: 0.241,
+        bench: { 'Toxicity': 0.418, 'AGI Eval': 0.104, 'GSM8K': 0.192, 'MATH': 0.066, 'BBQ': 0.401, 'WinoG': 0.287 }
+      },
+      benchmarkGaps: {
+        perf: 'low', overall: 0.221,
+        bench: { 'MMLU': 0.241, 'HellaSwag': 0.312, 'ARC': 0.183, 'GSM8K': 0.124, 'HumanEval': 0.082, 'TruthfulQA': 0.271, 'XSum': 0.214, 'SQuAD': 0.251 }
+      }},
+    { id: 10, x: 288, y: 315, concept: 'multi-step arithmetic',
+      modelGaps: {
+        perf: 'very poor', overall: 0.208,
+        bench: { 'Toxicity': 0.347, 'AGI Eval': 0.087, 'GSM8K': 0.164, 'MATH': 0.048, 'BBQ': 0.388, 'WinoG': 0.245 }
+      },
+      benchmarkGaps: {
+        perf: 'high', overall: 0.781,
+        bench: { 'MMLU': 0.683, 'HellaSwag': 0.521, 'ARC': 0.714, 'GSM8K': 0.964, 'HumanEval': 0.823, 'TruthfulQA': 0.624, 'XSum': 0.582, 'SQuAD': 0.651 }
+      }},
+    { id: 11, x: 368, y: 315, concept: 'temporal reasoning',
+      modelGaps: {
+        perf: 'very poor', overall: 0.286,
+        bench: { 'Toxicity': 0.462, 'AGI Eval': 0.131, 'GSM8K': 0.228, 'MATH': 0.078, 'BBQ': 0.472, 'WinoG': 0.334 }
+      },
+      benchmarkGaps: {
+        perf: 'very low', overall: 0.187,
+        bench: { 'MMLU': 0.221, 'HellaSwag': 0.262, 'ARC': 0.152, 'GSM8K': 0.124, 'HumanEval': 0.081, 'TruthfulQA': 0.213, 'XSum': 0.184, 'SQuAD': 0.201 }
+      }}
+  ];
+
+  const clusters = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8],
+    [9],
+    [10, 11]
+  ];
+
+  const dotById = id => dots.find(d => d.id === id);
+  const dataForMode = (dot, mode) => mode === 'model' ? dot.modelGaps : dot.benchmarkGaps;
+  const colorForDot = (dot, mode) => MODE_INFO[mode].colors[dataForMode(dot, mode).perf];
+
+  // ==================== Cluster outlines ====================
+  function convexHull(points) {
+    const unique = [...new Set(points.map(p => p.join(',')))].map(s => s.split(',').map(Number));
+    if (unique.length <= 2) return unique;
+    unique.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cross = (O, A, B) => (A[0]-O[0])*(B[1]-O[1]) - (A[1]-O[1])*(B[0]-O[0]);
+    const lower = [];
+    for (const p of unique) {
+      while (lower.length >= 2 && cross(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop();
+      lower.push(p);
+    }
+    const upper = [];
+    for (let i = unique.length - 1; i >= 0; i--) {
+      const p = unique[i];
+      while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop();
+      upper.push(p);
+    }
+    return lower.slice(0, -1).concat(upper.slice(0, -1));
+  }
+
+  function clusterPath(clusterDots, pad = CLUSTER_PADDING) {
+    if (clusterDots.length === 1) {
+      const d = clusterDots[0];
+      return `M ${d.x - pad},${d.y} a ${pad},${pad} 0 1,0 ${pad*2},0 a ${pad},${pad} 0 1,0 ${-pad*2},0 Z`;
+    }
+    if (clusterDots.length === 2) {
+      const [a, b] = clusterDots;
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const len = Math.hypot(dx, dy);
+      const ux = dx / len, uy = dy / len;
+      const px = -uy, py = ux;
+      const a1 = [a.x + px*pad, a.y + py*pad];
+      const a2 = [a.x - px*pad, a.y - py*pad];
+      const b1 = [b.x + px*pad, b.y + py*pad];
+      const b2 = [b.x - px*pad, b.y - py*pad];
+      return `M ${a1[0]},${a1[1]} L ${b1[0]},${b1[1]} ` +
+             `A ${pad},${pad} 0 0,0 ${b2[0]},${b2[1]} ` +
+             `L ${a2[0]},${a2[1]} ` +
+             `A ${pad},${pad} 0 0,0 ${a1[0]},${a1[1]} Z`;
+    }
+    const hull = convexHull(clusterDots.map(d => [d.x, d.y]));
+    const n = hull.length;
+    let path = '';
+    for (let i = 0; i < n; i++) {
+      const [cx, cy] = hull[i];
+      const [prevX, prevY] = hull[(i - 1 + n) % n];
+      const [nextX, nextY] = hull[(i + 1) % n];
+      let d1x = cx - prevX, d1y = cy - prevY;
+      const l1 = Math.hypot(d1x, d1y);
+      d1x /= l1; d1y /= l1;
+      const n1x = d1y, n1y = -d1x;
+      let d2x = nextX - cx, d2y = nextY - cy;
+      const l2 = Math.hypot(d2x, d2y);
+      d2x /= l2; d2y /= l2;
+      const n2x = d2y, n2y = -d2x;
+      const endX = cx + n1x * pad, endY = cy + n1y * pad;
+      const startNextX = cx + n2x * pad, startNextY = cy + n2y * pad;
+      if (i === 0) {
+        const initX = prevX + n1x * pad, initY = prevY + n1y * pad;
+        path += `M ${initX},${initY} `;
+      }
+      path += `L ${endX},${endY} A ${pad},${pad} 0 0,1 ${startNextX},${startNextY} `;
+    }
+    return path + 'Z';
+  }
+
+  // ==================== Render clusters & dots ====================
+  const clustersG = document.getElementById('clusters');
+  clusters.forEach(cluster => {
+    const cdots = cluster.map(id => dotById(id));
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', clusterPath(cdots));
+    path.setAttribute('class', 'cluster-path');
+    clustersG.appendChild(path);
+  });
+
+  const dotsG         = document.getElementById('dots');
+  const selectedLayer = document.getElementById('selectedDotLayer');
+
+  dots.forEach(d => {
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', d.x);
+    c.setAttribute('cy', d.y);
+    c.setAttribute('r', DOT_R);
+    c.setAttribute('class', 'dot');
+    c.setAttribute('data-id', d.id);
+    c.setAttribute('tabindex', '0');
+    c.setAttribute('role', 'button');
+    c.setAttribute('aria-label', `${d.concept}, ${dataForMode(d, currentMode).perf}`);
+    c.style.fill = colorForDot(d, currentMode);
+    c.addEventListener('click', e => {
+      e.stopPropagation();
+      selectDot(d.id);
+    });
+    c.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectDot(d.id);
+      } else if (e.key === 'Escape') {
+        deselect();
+      }
+    });
+    dotsG.appendChild(c);
+  });
+
+  // ==================== Selection / card / connector ====================
+  const card          = document.getElementById('card');
+  const connector     = document.getElementById('connector');
+  const connectorFill = document.getElementById('connectorFill');
+  const connectorStrk = document.getElementById('connectorStroke');
+  const container     = document.getElementById('vizContainer');
+
+  let selectedId      = null;
+  // When deselect() fires, we don't immediately move the dot back to #dots —
+  // the connector is still fading out (~180ms) and moving the dot earlier
+  // would put the half-transparent ribbon on top of the shrinking dot,
+  // creating a one-frame glitch. Instead we schedule the move, and track
+  // the pending id so a rapid re-select can cancel / handle it correctly.
+  let pendingReturnId = null;
+  let deselectTimeout = null;
+
+  function liftToFront(id) {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) selectedLayer.appendChild(el);
+  }
+  function returnToBack(id) {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) dotsG.appendChild(el);
+  }
+
+  // Cancel any in-flight deselect return. If there's a dot still waiting to
+  // be moved back, handle it now: leave it in the front layer if it's the
+  // new target (the re-select case), otherwise move it back immediately.
+  function flushPendingReturn(incomingId) {
+    if (deselectTimeout !== null) {
+      clearTimeout(deselectTimeout);
+      deselectTimeout = null;
+    }
+    if (pendingReturnId !== null && pendingReturnId !== incomingId) {
+      returnToBack(pendingReturnId);
+    }
+    pendingReturnId = null;
+  }
+
+  function populateCard(d) {
+    const modeData = dataForMode(d, currentMode);
+    document.getElementById('conceptName').textContent = d.concept;
+    document.getElementById('overallScore').textContent = modeData.overall.toFixed(3);
+    const bmEl = document.getElementById('benchmarks');
+    bmEl.innerHTML = '';
+    for (const [name, val] of Object.entries(modeData.bench)) {
+      const div = document.createElement('div');
+      div.className = 'bm';
+      div.innerHTML = `<div class="num">${val.toFixed(3)}</div><div class="label">${name}</div>`;
+      bmEl.appendChild(div);
+    }
+  }
+
+  function selectDot(id) {
+    flushPendingReturn(id);
+
+    if (selectedId !== null && selectedId !== id) returnToBack(selectedId);
+    selectedId = id;
+    liftToFront(id);
+
+    const d = dotById(id);
+    document.querySelectorAll('.dot').forEach(el => {
+      el.classList.toggle('selected', Number(el.getAttribute('data-id')) === id);
+    });
+
+    populateCard(d);
+    positionCard(d);
+  }
+
+  function positionCard(d) {
+    const rect  = container.getBoundingClientRect();
+    const scale = rect.width / VIEWBOX.w;
+
+    const cardWidth  = 260;
+    const cardHeight = card.offsetHeight || 280;
+    const gap = 38 * scale;
+
+    const dotScreenX = d.x * scale;
+    const dotScreenY = d.y * scale;
+
+    let cardLeft, side;
+    const roomRight = rect.width - (dotScreenX + gap);
+    const roomLeft  = dotScreenX - gap;
+    if (roomRight >= cardWidth + 4) {
+      side = 'right';
+      cardLeft = dotScreenX + gap;
+    } else if (roomLeft >= cardWidth + 4) {
+      side = 'left';
+      cardLeft = dotScreenX - gap - cardWidth;
+    } else {
+      side = roomRight >= roomLeft ? 'right' : 'left';
+      cardLeft = side === 'right'
+        ? Math.min(rect.width - cardWidth - 4, dotScreenX + gap)
+        : Math.max(4, dotScreenX - gap - cardWidth);
+    }
+
+    let cardTop = dotScreenY - 36;
+    cardTop = Math.max(6, Math.min(rect.height - cardHeight - 6, cardTop));
+
+    card.style.left = cardLeft + 'px';
+    card.style.top  = cardTop  + 'px';
+    card.classList.add('visible');
+
+    const cardLeft_vb   = cardLeft / scale;
+    const cardRight_vb  = (cardLeft + cardWidth) / scale;
+    const cardTop_vb    = cardTop / scale;
+    const cardBottom_vb = (cardTop + cardHeight) / scale;
+    const cornerR_vb    = CARD_CORNER_RADIUS / scale;
+
+    const edgeX   = side === 'right' ? cardLeft_vb : cardRight_vb;
+    const topY    = cardTop_vb + cornerR_vb;
+    const bottomY = cardBottom_vb - cornerR_vb;
+
+    updateConnector(d.x, d.y, edgeX, topY, bottomY);
+    connector.classList.add('visible');
+  }
+
+  function updateConnector(dotX, dotY, edgeX, topY, bottomY) {
+    const midX = (dotX + edgeX) / 2;
+    const topCurve    = `Q ${midX},${dotY} ${edgeX},${topY}`;
+    const bottomCurve = `Q ${midX},${dotY} ${edgeX},${bottomY}`;
+    const bottomBack  = `Q ${midX},${dotY} ${dotX},${dotY}`;
+
+    const fillD =
+      `M ${dotX},${dotY} ${topCurve} ` +
+      `L ${edgeX},${bottomY} ` +
+      `${bottomBack} Z`;
+
+    const strokeD =
+      `M ${dotX},${dotY} ${topCurve} ` +
+      `M ${dotX},${dotY} ${bottomCurve}`;
+
+    connectorFill.setAttribute('d', fillD);
+    connectorStrk.setAttribute('d', strokeD);
+  }
+
+  function deselect() {
+    if (selectedId === null) return;
+
+    const prevId = selectedId;
+    selectedId = null;
+
+    card.classList.remove('visible');
+    connector.classList.remove('visible');
+    document.querySelectorAll('.dot').forEach(el => el.classList.remove('selected'));
+
+    // The dot stays in the front layer while everything fades out, so the
+    // connector ribbon never paints over the shrinking dot. Only after the
+    // transitions settle do we move the dot back to the main layer.
+    if (deselectTimeout !== null) clearTimeout(deselectTimeout);
+    pendingReturnId = prevId;
+    deselectTimeout = setTimeout(() => {
+      if (pendingReturnId !== null) {
+        returnToBack(pendingReturnId);
+        pendingReturnId = null;
+      }
+      deselectTimeout = null;
+    }, DESELECT_RETURN_DELAY_MS);
+  }
+
+  // ==================== Mode switching ====================
+  function renderLegend() {
+    const info = MODE_INFO[currentMode];
+    document.getElementById('legendTitle').textContent = info.legendTitle;
+    const scale = document.getElementById('legendScale');
+    scale.innerHTML = '';
+    info.levels.forEach(level => {
+      const step = document.createElement('div');
+      step.className = 'step';
+      step.innerHTML = `<div class="chip" style="background:${info.colors[level]}"></div><div class="lbl">${level}</div>`;
+      scale.appendChild(step);
+    });
+  }
+
+  function updateDotColors() {
+    dots.forEach(dot => {
+      const el = document.querySelector(`[data-id="${dot.id}"]`);
+      if (el) {
+        el.style.fill = colorForDot(dot, currentMode);
+        el.setAttribute('aria-label', `${dot.concept}, ${dataForMode(dot, currentMode).perf}`);
+      }
+    });
+  }
+
+  function switchMode(mode) {
+    if (mode === currentMode) return;
+    currentMode = mode;
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      const isActive = btn.dataset.mode === mode;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
+    });
+
+    document.getElementById('evaluatingValue').textContent = MODE_INFO[mode].label;
+    document.getElementById('overallLabel').innerHTML = MODE_INFO[mode].overallLabel;
+
+    updateDotColors();
+    renderLegend();
+
+    if (selectedId !== null) {
+      const d = dotById(selectedId);
+      populateCard(d);
+      positionCard(d);
+    }
+  }
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+  });
+
+  function lockEvaluatingPillWidth() {
+    const pill     = document.querySelector('.evaluating');
+    const valueEl  = document.getElementById('evaluatingValue');
+    const original = valueEl.textContent;
+
+    let maxWidth = 0;
+    for (const info of Object.values(MODE_INFO)) {
+      valueEl.textContent = info.label;
+      maxWidth = Math.max(maxWidth, pill.offsetWidth);
+    }
+
+    valueEl.textContent = original;
+    pill.style.width = maxWidth + 'px';
+  }
+
+  // ==================== Global listeners ====================
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.dot') && !e.target.closest('.card') && !e.target.closest('.mode-btn')) deselect();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') deselect();
+  });
+
+  window.addEventListener('resize', () => {
+    if (selectedId !== null) {
+      const d = dotById(selectedId);
+      positionCard(d);
+    }
+  });
+
+  // ==================== Initial render ====================
+  renderLegend();
+  lockEvaluatingPillWidth();
+</script>
+</body>
+</html>
