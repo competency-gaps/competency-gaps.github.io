@@ -34,6 +34,20 @@
             background: none;
             padding: 0;
         }
+        /* White-rounded-bordered figure card, used inside gray bands */
+        .figure-card {
+            border: 1.5px solid #dfe6e9;
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 18px;
+            background: #fff;
+        }
+        .figure-card img {
+            display: block;
+            width: 100%;
+            padding: 0 !important;
+            margin: 0;
+        }
     </style>
     <script src="assets/scripts/navbar.js"></script>
     <script type="text/x-mathjax-config">
@@ -128,11 +142,13 @@
             <li><p class="text"><b>Model performance</b> ($\chi_{\text{model}}^{(c)}$) &mdash; when the concept fires, how often does the model get the answer right?</p></li>
         </ul>
 
-        <figure style="margin: 2vh 0;">
-            <img src="figures/teaser-fig-v5.png" alt="Method overview" style="max-width: 100%;">
-            <p class="caption"><b>Method overview.</b> CG decomposes an evaluation into thousands of interpretable concepts learned by a sparse autoencoder. <em>(a)</em> Benchmark gaps surface concepts that are underrepresented in a suite. <em>(b)</em> Model gaps surface concepts where the model systematically underperforms.</p>
-        </figure>
+    </div>
 
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 95%; margin: 0 auto;">
+            <img src="figures/teaser-fig-v5.png" alt="Method overview">
+        </div>
+        <p class="caption"><b>Method overview.</b> CG decomposes an evaluation into thousands of interpretable concepts learned by a sparse autoencoder. <em>(a)</em> Benchmark gaps surface concepts that are underrepresented in a suite. <em>(b)</em> Model gaps surface concepts where the model systematically underperforms.</p>
     </div>
 
     <div class="container blog main">
@@ -142,12 +158,16 @@
         <p class="text">
             Running CG on Llama 3.1 8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~65k concepts. The result is brutally right-skewed:
         </p>
+    </div>
 
-        <figure style="margin: 2vh 0;">
-            <img src="figures/results/llama_3_1_9b/overall_cg_bench_histogram--flipped.png" alt="Cross-benchmark coverage distribution" style="max-width: 70%; margin: 0 auto;">
-            <p class="caption"><b>Cross-benchmark coverage is extremely uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail. The orange curve (SAE from a <em>different</em> model) shows the same shape.</p>
-        </figure>
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
+            <img src="figures/results/llama_3_1_9b/overall_cg_bench_histogram--flipped.png" alt="Cross-benchmark coverage distribution">
+        </div>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Cross-benchmark coverage is extremely uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail. The orange curve (SAE from a <em>different</em> model) shows the same shape.</p>
+    </div>
 
+    <div class="container blog main">
         <p class="text">
             What sits in the fat right tail? Concepts like:
         </p>
@@ -175,25 +195,44 @@
         <h1>Finding 2 &mdash; Every benchmark has its own blindspots</h1>
 
         <p class="text">
-            Zoom in on individual benchmarks and the same skew repeats at each one. Every benchmark except Vectara misses at least 30% of the SAE dictionary, and several overlap heavily with each other in what they test.
+            Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave entirely untouched? Every benchmark but Vectara misses at least 30% of the dictionary.
         </p>
+    </div>
 
-        <div class="columns-2" style="gap: 2em; align-items: start; margin: 2vh 0;">
-            <figure>
-                <img src="figures/results/llama_3_1_9b/missing_concepts_percentage_by_benchmark.png" alt="Missing concept percentages">
-                <p class="caption"><b>Fraction of the SAE dictionary untested by each benchmark.</b> Single benchmarks leave huge portions of the concept space unmeasured.</p>
-            </figure>
-            <figure>
-                <img src="figures/results/llama_3_1_9b/benchmark_overlap_heatmap.png" alt="Benchmark overlap heatmap">
-                <p class="caption"><b>Benchmark-pair Jaccard overlap.</b> Many benchmarks in a &ldquo;diverse&rdquo; suite end up testing overlapping concept profiles.</p>
-            </figure>
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
+            <img src="figures/results/llama_3_1_9b/missing_concepts_percentage_by_benchmark.png" alt="Missing concept percentages">
         </div>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Fraction of the SAE dictionary untested by each benchmark.</b> Single benchmarks leave huge portions of the concept space unmeasured.</p>
+    </div>
 
-        <figure style="margin: 2vh 0;">
+    <div class="container blog main">
+        <p class="text">
+            Next: you might hope that combining several benchmarks into a "diverse suite" would fill those holes. Often it doesn't &mdash; the benchmarks end up overlapping heavily in <em>what</em> they test, not just <em>how much</em>.
+        </p>
+    </div>
+
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 72%; margin: 0 auto;">
+            <img src="figures/results/llama_3_1_9b/benchmark_overlap_heatmap.png" alt="Benchmark overlap heatmap">
+        </div>
+        <p class="caption" style="max-width: 72%; margin: 0 auto;"><b>Benchmark-pair Jaccard overlap.</b> Many benchmarks in a &ldquo;diverse&rdquo; suite end up testing overlapping concept profiles &mdash; more redundancy than you'd expect.</p>
+    </div>
+
+    <div class="container blog main">
+        <p class="text">
+            And finally, inside any single benchmark, the same right-skewed dominance we saw across the full suite repeats. Each benchmark's headline score is driven by a small handful of high-activation concepts:
+        </p>
+    </div>
+
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 100%; margin: 0 auto;">
             <img src="figures/results/llama_3_1_9b/cg_bench_histograms_per_benchmark.png" alt="Per-benchmark coverage distributions">
-            <p class="caption"><b>Per-benchmark coverage distributions</b> are all right-skewed &mdash; each benchmark's score is dominated by a small set of high-activation concepts.</p>
-        </figure>
+        </div>
+        <p class="caption"><b>Per-benchmark coverage distributions</b> are all right-skewed &mdash; each benchmark's score is dominated by a small set of high-activation concepts.</p>
+    </div>
 
+    <div class="container blog main">
         <p class="text">
             More uncomfortably, the concepts each benchmark misses often look <em>central</em> to what that benchmark claims to evaluate. We ran Gemini over the list of missing concepts for each benchmark and kept ones that seemed in scope:
         </p>
@@ -223,12 +262,16 @@
         <p class="text">
             The same pipeline, now scoring $\chi_{\text{model}}^{(c)}$, turns into a per-concept report card for the model. Llama's per-concept performance distribution is wide: the model is near-perfect on some concepts and close to zero on others.
         </p>
+    </div>
 
-        <figure style="margin: 2vh 0;">
-            <img src="figures/results/llama_3_1_9b/overall_cg_model_histogram--flipped.png" alt="Cross-benchmark performance distribution" style="max-width: 70%; margin: 0 auto;">
-            <p class="caption"><b>Llama's per-concept performance</b> across all ten benchmarks. Wide variance, with a clear mass of near-zero concepts that the aggregate accuracy completely hides.</p>
-        </figure>
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
+            <img src="figures/results/llama_3_1_9b/overall_cg_model_histogram--flipped.png" alt="Cross-benchmark performance distribution">
+        </div>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Llama's per-concept performance</b> across all ten benchmarks. Wide variance, with a clear mass of near-zero concepts that the aggregate accuracy completely hides.</p>
+    </div>
 
+    <div class="container blog main">
         <p class="text">
             When we rank concepts by $\chi_{\text{model}}^{(c)}$ and read the labels, a pattern jumps out: Llama is strongest on <em>helpful, agreeable, coding</em> concepts, and weakest on their near-opposites &mdash; <em>refusing, boundary-setting, pushing back</em>.
         </p>
@@ -265,25 +308,41 @@
         </p>
 
         <p class="text">
-            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items that triggered those concepts and check what's going on:
+            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items that triggered those concepts. Here's a LogicBench item where the "intuitive understanding" concept fires strongly &mdash; and where Llama gets the answer wrong:
         </p>
+    </div>
 
-        <div class="columns-2" style="gap: 2em; align-items: start; margin: 2vh 0;">
-            <figure>
-                <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64413-logicbench.png" alt="LogicBench example for intuitive understanding concept">
-                <p class="caption"><b>LogicBench item</b> firing the "intuitive understanding" concept <tt>(64413)</tt>. Llama answers incorrectly.</p>
-            </figure>
-            <figure>
-                <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64540-winogrande.png" alt="WinoGrande example for intuitive understanding concept">
-                <p class="caption"><b>WinoGrande item</b> firing the "intuitive understanding" concept <tt>(64540)</tt>. Llama also misses this one.</p>
-            </figure>
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 75%; margin: 0 auto;">
+            <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64413-logicbench.png" alt="LogicBench example for intuitive understanding concept">
         </div>
+        <p class="caption" style="max-width: 75%; margin: 0 auto;"><b>LogicBench item firing concept <tt>(64413)</tt>: "grokking and deep intuitive understanding."</b> Llama answers incorrectly, consistent with this concept being a model gap.</p>
+    </div>
 
-        <figure style="margin: 2vh 0;">
+    <div class="container blog main">
+        <p class="text">
+            The same pattern shows up on an entirely different benchmark and a different "intuitive understanding" concept, which rules out a dataset-specific fluke:
+        </p>
+    </div>
+
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 75%; margin: 0 auto;">
+            <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64540-winogrande.png" alt="WinoGrande example for intuitive understanding concept">
+        </div>
+        <p class="caption" style="max-width: 75%; margin: 0 auto;"><b>WinoGrande item firing concept <tt>(64540)</tt>: "intuitive understanding and natural ease of use."</b> Again, Llama misses it.</p>
+    </div>
+
+    <div class="container blog main">
+        <p class="text">
+            Finally, the "wide performance spread" we saw at the suite level isn't just an artifact of averaging across benchmarks &mdash; inside each individual benchmark, per-concept accuracy fans out just as widely:
+        </p>
+    </div>
+
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 100%; margin: 0 auto;">
             <img src="figures/results/llama_3_1_9b/cg_model_histograms_per_benchmark.png" alt="Per-benchmark performance distributions">
-            <p class="caption"><b>Per-benchmark performance distributions.</b> Even on a single benchmark, per-concept accuracy fans out widely &mdash; the headline accuracy is a weighted average over this spread.</p>
-        </figure>
-
+        </div>
+        <p class="caption"><b>Per-benchmark performance distributions.</b> The headline accuracy for each benchmark is a weighted average over this spread.</p>
     </div>
 
     <div class="container blog main">
@@ -335,12 +394,16 @@
         <p class="text">
             CG produces thousands of per-concept scores per model. We built an interactive viewer to make that volume usable: search and filter concepts, inspect per-benchmark breakdowns, and jump directly to the example data points that drove any particular score.
         </p>
+    </div>
 
-        <figure style="margin: 2vh 0;">
-            <img src="figures/web-app-fig-v4.png" alt="Interactive web application" style="max-width: 90%; margin: 0 auto;">
-            <p class="caption"><b>Interactive exploration app.</b> Concept list, per-concept detail modal with per-benchmark scores, coverage and correlation views, and drill-down into the examples that drove each score.</p>
-        </figure>
+    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
+        <div class="figure-card" style="max-width: 90%; margin: 0 auto;">
+            <img src="figures/web-app-fig-v4.png" alt="Interactive web application">
+        </div>
+        <p class="caption"><b>Interactive exploration app.</b> Concept list, per-concept detail modal with per-benchmark scores, coverage and correlation views, and drill-down into the examples that drove each score.</p>
+    </div>
 
+    <div class="container blog main">
         <p class="text">
             Code and data loaders for running CG on your own model or benchmark are <a href="https://github.com/maty-bohacek/competency-gaps">open-sourced</a>. Two useful workflows to start with:
         </p>
