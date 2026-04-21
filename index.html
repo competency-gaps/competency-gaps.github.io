@@ -308,28 +308,25 @@
         </p>
 
         <p class="text">
-            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items that triggered those concepts. Here's a LogicBench item where the "intuitive understanding" concept fires strongly &mdash; and where Llama gets the answer wrong:
+            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items that triggered those concepts. Below are two such items &mdash; one from LogicBench, one from WinoGrande &mdash; where an "intuitive understanding" concept fires strongly and Llama gets the answer wrong. The same pattern showing up across two different benchmarks rules out a dataset-specific fluke:
         </p>
     </div>
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
-        <div class="figure-card" style="max-width: 75%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64413-logicbench.png" alt="LogicBench example for intuitive understanding concept">
+        <div style="display: flex; gap: 2%; max-width: 100%; margin: 0 auto; align-items: stretch;">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div class="figure-card" style="flex: 1; display: flex; align-items: center;">
+                    <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64413-logicbench.png" alt="LogicBench example for intuitive understanding concept">
+                </div>
+                <p class="caption"><b>LogicBench item firing concept <tt>(64413)</tt>: "grokking and deep intuitive understanding."</b> Llama answers incorrectly, consistent with this concept being a model gap.</p>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div class="figure-card" style="flex: 1; display: flex; align-items: center;">
+                    <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64540-winogrande.png" alt="WinoGrande example for intuitive understanding concept">
+                </div>
+                <p class="caption"><b>WinoGrande item firing concept <tt>(64540)</tt>: "intuitive understanding and natural ease of use."</b> Again, Llama misses it.</p>
+            </div>
         </div>
-        <p class="caption" style="max-width: 75%; margin: 0 auto;"><b>LogicBench item firing concept <tt>(64413)</tt>: "grokking and deep intuitive understanding."</b> Llama answers incorrectly, consistent with this concept being a model gap.</p>
-    </div>
-
-    <div class="container blog main">
-        <p class="text">
-            The same pattern shows up on an entirely different benchmark and a different "intuitive understanding" concept, which rules out a dataset-specific fluke:
-        </p>
-    </div>
-
-    <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
-        <div class="figure-card" style="max-width: 75%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64540-winogrande.png" alt="WinoGrande example for intuitive understanding concept">
-        </div>
-        <p class="caption" style="max-width: 75%; margin: 0 auto;"><b>WinoGrande item firing concept <tt>(64540)</tt>: "intuitive understanding and natural ease of use."</b> Again, Llama misses it.</p>
     </div>
 
     <div class="container blog main">
