@@ -115,7 +115,7 @@
     <div class="container blog main first" id="blog-main">
 
         <fieldset class="insights-box">
-            <legend>What You'll See Below</legend>
+            <legend>What You'll See Below &mdash; An Example Application of the Method</legend>
             <p style="margin: 0 0 0.8em 0;">A walkthrough of the kinds of insights Competency Gaps surfaces, using <tt>Llama3.1-8B-Instruct</tt> across ten benchmarks as a running example.</p>
             <ul style="margin-left: 1.5em; margin-bottom: 0;">
                 <li style="margin-bottom: 0.6em;">A handful of concepts dominate almost every benchmark &mdash; and drive the aggregate scores we all report.</li>
@@ -123,6 +123,7 @@
                 <li style="margin-bottom: 0.6em;">Llama is great at helpful/sycophantic behaviors &mdash; and consistently bad at their opposites: polite refusals, boundary-setting, appeals to intuition.</li>
                 <li style="margin-bottom: 0.0em;">The findings hold up under subsampling, adversarial ablation, and when the SAE is swapped for one trained on a different model.</li>
             </ul>
+            <p style="margin: 0.8em 0 0 0; font-style: italic;">These are just examples applying the method to a single model.</p>
         </fieldset>
 
     </div>
@@ -153,7 +154,7 @@
 
     <div class="container blog main">
 
-        <h1>Finding 1 &mdash; A few concepts dominate every benchmark</h1>
+        <h1>Example Finding 1 &mdash; A few concepts dominate every benchmark</h1>
 
         <p class="text">
             Running CG on Llama 3.1 8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~65k concepts. The result is brutally right-skewed:
@@ -192,7 +193,7 @@
 
     <div class="container blog main">
 
-        <h1>Finding 2 &mdash; Every benchmark has its own blindspots</h1>
+        <h1>Example Finding 2 &mdash; Each benchmark has its own blindspots</h1>
 
         <p class="text">
             Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave entirely untouched? Every benchmark but Vectara misses at least 30% of the dictionary.
@@ -257,7 +258,7 @@
 
     <div class="container blog main">
 
-        <h1>Finding 3 &mdash; Llama is sycophantic</h1>
+        <h1>Example Finding 3 &mdash; Our method automatically uncovers sycophancy</h1>
 
         <p class="text">
             The same pipeline, now scoring $\chi_{\text{model}}^{(c)}$, turns into a per-concept report card for the model. Llama's per-concept performance distribution is wide: the model is near-perfect on some concepts and close to zero on others.
