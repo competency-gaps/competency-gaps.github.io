@@ -133,14 +133,14 @@
         <h1>A single score hides a lot</h1>
 
         <p class='text'>
-            Most LLM benchmarks compress performance into one number. That summary hides how performance is spread across different kinds of inputs. On MATH, topic-wise accuracy ranges from 27% to 74% behind an overall 54%. The same kind of dispersion exists on every benchmark &mdash; we just don't usually look.
+            Most LLM benchmarks compress performance into one number. That summary hides how performance is spread across different kinds of inputs. On MATH, topic-wise accuracy ranges from 27% to 74% behind an overall 54%. The same kind of dispersion exists on every benchmark; we just don't usually look.
         </p>
         <p class='text'>
             <b>Competency Gaps (CG)</b> gives us that disaggregated view automatically. Instead of relying on human-written topic labels, we project each benchmark example into the concept space of a <em>sparse autoencoder</em> trained on the model's own activations. Every concept becomes a fine-grained axis along which we can ask two questions:
         </p>
         <ul style="margin-left: 3em !important;">
-            <li><p class="text"><b>Benchmark coverage</b> ($\chi_{\text{bench}}^{(c)}$) &mdash; how much does the benchmark exercise this concept?</p></li>
-            <li><p class="text"><b>Model performance</b> ($\chi_{\text{model}}^{(c)}$) &mdash; when the concept fires, how often does the model get the answer right?</p></li>
+            <li><p class="text"><b>Benchmark coverage</b> ($\chi_{\text{bench}}^{(c)}$): how much does the benchmark exercise this concept?</p></li>
+            <li><p class="text"><b>Model performance</b> ($\chi_{\text{model}}^{(c)}$): when the concept fires, how often does the model get the answer right?</p></li>
         </ul>
 
     </div>
@@ -154,7 +154,7 @@
 
     <div class="container blog main">
 
-        <h1>Example Finding 1 &mdash; A few concepts dominate every benchmark</h1>
+        <h1>Example Finding 1: A few concepts dominate every benchmark</h1>
 
         <p class="text">
             Running CG on Llama 3.1 8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~65k concepts. The result is brutally right-skewed:
@@ -173,9 +173,9 @@
             What sits in the fat right tail? Concepts like:
         </p>
         <ul style="margin-left: 3em !important;">
-            <li><p class="text"><tt>(56130)</tt> &mdash; "English Premier League football discussions, especially about Manchester teams"</p></li>
-            <li><p class="text"><tt>(41290)</tt> &mdash; "New conversation or topic segment boundary marker"</p></li>
-            <li><p class="text"><tt>(902)</tt> &mdash; "Step-by-step mathematical explanations and calculations"</p></li>
+            <li><p class="text"><tt>(56130)</tt> "English Premier League football discussions, especially about Manchester teams"</p></li>
+            <li><p class="text"><tt>(41290)</tt> "New conversation or topic segment boundary marker"</p></li>
+            <li><p class="text"><tt>(902)</tt> "Step-by-step mathematical explanations and calculations"</p></li>
         </ul>
         <p class="text">
             Some of this is substantive (math chains of thought). Much of it is ambient data artifact (sports news, prompt boundary tokens). Either way, it disproportionately shapes the aggregate number.
@@ -185,15 +185,15 @@
             At the other end, <b>314 concepts (1%) are entirely missing</b> from the suite. These include things you might reasonably want to test:
         </p>
         <ul style="margin-left: 3em !important;">
-            <li><p class="text"><tt>(2501)</tt> &mdash; "The assistant explaining why it needs more information"</p></li>
-            <li><p class="text"><tt>(2641)</tt> &mdash; "The assistant needs to explain its limitations or capabilities"</p></li>
-            <li><p class="text"><tt>(2009)</tt> &mdash; "Regulatory classification and compliance requirements"</p></li>
+            <li><p class="text"><tt>(2501)</tt> "The assistant explaining why it needs more information"</p></li>
+            <li><p class="text"><tt>(2641)</tt> "The assistant needs to explain its limitations or capabilities"</p></li>
+            <li><p class="text"><tt>(2009)</tt> "Regulatory classification and compliance requirements"</p></li>
         </ul>
     </div>
 
     <div class="container blog main">
 
-        <h1>Example Finding 2 &mdash; Each benchmark has its own blindspots</h1>
+        <h1>Example Finding 2: Each benchmark has its own blindspots</h1>
 
         <p class="text">
             Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave entirely untouched? Every benchmark but Vectara misses at least 30% of the dictionary.
@@ -258,7 +258,7 @@
 
     <div class="container blog main">
 
-        <h1>Example Finding 3 &mdash; Our method automatically uncovers sycophancy</h1>
+        <h1>Example Finding 3: Our method automatically uncovers sycophancy</h1>
 
         <p class="text">
             The same pipeline, now scoring $\chi_{\text{model}}^{(c)}$, turns into a per-concept report card for the model. Llama's per-concept performance distribution is wide: the model is near-perfect on some concepts and close to zero on others.
