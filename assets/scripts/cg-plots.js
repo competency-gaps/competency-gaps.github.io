@@ -160,12 +160,10 @@
         const bars = d.bars;
         const x = bars.map((b) => b.display);
         const y = bars.map((b) => b.missing_pct);
-        const colors = bars.map((b) => b.color);
-        const cats = bars.map((b) => b.category);
         const trace = {
           type: "bar",
           x: x, y: y,
-          marker: { color: colors, opacity: 0.95, line: { color: "#000", width: 0.8 } },
+          marker: { color: BLUE, opacity: 0.78, line: { color: "#000", width: 0.6 } },
           text: y.map((v) => v.toFixed(1) + "%"),
           textposition: "outside",
           textfont: { size: 12, family: FONT },
@@ -211,7 +209,8 @@
           zmin: 0, zmax: 1,
           colorbar: {
             title: { text: "Jaccard", side: "right", font: { size: 12 } },
-            thickness: 14, len: 0.9, tickfont: { size: 11 },
+            thickness: 14, len: 1, lenmode: "fraction",
+            y: 0.5, yanchor: "middle", tickfont: { size: 11 },
             outlinewidth: 0,
           },
           text: text,
@@ -220,12 +219,9 @@
           hovertemplate: "<b>%{y}</b> ∩ <b>%{x}</b><br>Jaccard = %{z:.3f}<extra></extra>",
         };
         const layout = fontLayout({
-          margin: { l: 120, r: 16, t: 16, b: 120 },
-          xaxis: { tickangle: -40, color: AXIS, automargin: true, constrain: "domain" },
-          yaxis: {
-            autorange: "reversed", color: AXIS, automargin: true,
-            scaleanchor: "x", constrain: "domain",
-          },
+          margin: { l: 118, r: 10, t: 8, b: 104 },
+          xaxis: { tickangle: -40, color: AXIS, automargin: true },
+          yaxis: { autorange: "reversed", color: AXIS, automargin: true },
         });
         el.innerHTML = "";
         return global.Plotly.newPlot(el, [trace], layout, BASE_CONFIG);
@@ -266,6 +262,11 @@
           const groupEl = document.createElement("div");
           groupEl.className = "cg-group";
           groupEl.style.background = hexToRgba(g.color, 0.32);
+          // On desktop the grid mirrors the original 2x5 figure: REASONING is a
+          // 2x2 block (flex grows by 2, 2 inner columns), the others are single
+          // columns. CSS consumes --cg-cols; mobile collapses to one column.
+          const cols = g.panels.length > 2 ? 2 : 1;
+          groupEl.style.setProperty("--cg-cols", cols);
           const title = document.createElement("div");
           title.className = "cg-group-title";
           title.textContent = cat;
