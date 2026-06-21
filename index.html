@@ -120,12 +120,12 @@
 
         <fieldset class="insights-box">
             <legend>What You'll See Below &mdash; An Example Application of the Method</legend>
-            <p style="margin: 0 0 0.8em 0;">A walkthrough of the kinds of insights Competency Gaps surfaces, using <tt>Llama3.1-8B-Instruct</tt> across ten benchmarks as a running example.</p>
+            <p style="margin: 0 0 0.8em 0;">A walkthrough of the kinds of insights Competency Gaps surfaces, using <tt>DeepSeek-R1-Distill-Llama-8B</tt> across ten benchmarks as a running example.</p>
             <ul style="margin-left: 1.5em; margin-bottom: 0;">
                 <li style="margin-bottom: 0.6em;">A handful of concepts dominate almost every benchmark and drive the aggregate scores we all report.</li>
-                <li style="margin-bottom: 0.6em;">Each benchmark misses concepts central to its own stated purpose (e.g., AGIEval lacks <em>objective assessment of evidence</em>).</li>
-                <li style="margin-bottom: 0.6em;">Llama is great at helpful/sycophantic behaviors and consistently bad at their opposites: polite refusals, boundary-setting, appeals to intuition.</li>
-                <li style="margin-bottom: 0.0em;">The findings hold up under subsampling, adversarial ablation, and when the SAE is swapped for one trained on a different model.</li>
+                <li style="margin-bottom: 0.6em;">Each benchmark leaves much of its own concept space barely tested, sometimes including concepts central to its stated purpose (e.g., LogicBench under-tests <em>words related to math problems and solutions</em>).</li>
+                <li style="margin-bottom: 0.6em;">R1-Distill is strong on the <em>surface forms</em> of math reasoning (variables, LaTeX, reasoning-step transitions) but weak on its <em>substance</em>: multi-digit arithmetic, boxed numerical answers, and code syntax.</li>
+                <li style="margin-bottom: 0.0em;">The patterns are consistent across benchmarks &mdash; the same concept shows up as a weakness on more than one dataset, not just one.</li>
             </ul>
             <p style="margin: 0.8em 0 0 0; font-style: italic;">These are just examples applying the method to a single model.</p>
         </fieldset>
@@ -137,7 +137,7 @@
         <h1>A single score hides a lot</h1>
 
         <p class='text'>
-            Most LLM benchmarks compress performance into one number. That summary hides how performance is spread across different kinds of inputs. On MATH, topic-wise accuracy ranges from 27% to 74% behind an overall 54%. The same kind of dispersion exists on every benchmark; we just don't usually look.
+            Most LLM benchmarks compress performance into one number. That summary hides how performance is spread across different kinds of inputs. On a benchmark like MATH, accuracy on individual topics can swing by tens of points behind a single headline score. The same kind of dispersion exists on every benchmark; we just don't usually look.
         </p>
         <p class='text'>
             <b>Competency Gaps (CG)</b> gives us that disaggregated view automatically. Instead of relying on human-written topic labels, we project each benchmark example into the concept space of a <em>sparse autoencoder</em> trained on the model's own activations. Every concept becomes a fine-grained axis along which we can ask two questions:
@@ -161,7 +161,7 @@
         <h1>Example Finding 1: A few concepts dominate every benchmark</h1>
 
         <p class="text">
-            Running CG on Llama 3.1 8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~65k concepts. The result is brutally right-skewed:
+            Running CG on DeepSeek-R1-Distill-Llama-8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~32k concepts. The result is brutally right-skewed:
         </p>
     </div>
 
@@ -169,7 +169,7 @@
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
             <div id="cg-overall-coverage" class="cg-plot" style="height: 380px;"></div>
         </div>
-        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Cross-benchmark coverage is extremely uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail. The orange curve (SAE from a <em>different</em> model) shows the same shape.</p>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Cross-benchmark coverage is extremely uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail.</p>
     </div>
 
     <div class="container blog main">
@@ -177,24 +177,19 @@
             What sits in the fat right tail? Concepts like:
         </p>
         <ul style="margin-left: 3em !important;">
-            <li><p class="text"><tt>(56130)</tt> "English Premier League football discussions, especially about Manchester teams"</p></li>
-            <li><p class="text"><tt>(41290)</tt> "New conversation or topic segment boundary marker"</p></li>
-            <li><p class="text"><tt>(902)</tt> "Step-by-step mathematical explanations and calculations"</p></li>
+            <li><p class="text"><tt>(31763)</tt> "Intermediate values in arithmetic calculations performed step by step"</p></li>
+            <li><p class="text"><tt>(21132)</tt> "Geometrical terms, especially discussing 3-D shapes and angles"</p></li>
+            <li><p class="text"><tt>(9347)</tt> "The word &lsquo;each&rsquo; used to describe something that occurs repeatedly"</p></li>
         </ul>
         <p class="text">
-            Some of this is substantive (math chains of thought). Much of it is ambient data artifact (sports news, prompt boundary tokens). Either way, it disproportionately shapes the aggregate number.
+            Some of this is substantive (the arithmetic and geometric scaffolding of chain-of-thought). Much of it is ambient structure (counting and repetition cues). Either way, it disproportionately shapes the aggregate number &mdash; and for this reasoning-distilled model the tail leans heavily toward math/reasoning machinery.
         </p>
 
         <p class="text">
-            At the other end, <b>314 concepts (1%) are entirely missing</b> from the suite. These include things you might reasonably want to test:
+            At the other end, <b>no concept is entirely absent</b> from the suite (every concept fires somewhere), but <b>2,730 concepts (~8.5%) are barely touched</b> &mdash; effectively untested. These include things you might reasonably want to measure:
         </p>
-        <ul style="margin-left: 3em !important;">
-            <li><p class="text"><tt>(2501)</tt> "The assistant explaining why it needs more information"</p></li>
-            <li><p class="text"><tt>(2641)</tt> "The assistant needs to explain its limitations or capabilities"</p></li>
-            <li><p class="text"><tt>(2009)</tt> "Regulatory classification and compliance requirements"</p></li>
-        </ul>
 
-        <p class="text" style="margin-top: 1.5em;">A representative slice of the concepts missing from the full suite under <tt>DeepSeek-R1-Distill-Llama-8B</tt>:</p>
+        <p class="text" style="margin-top: 1.5em;">A representative slice of the concepts that go (nearly) untested across the full suite under <tt>DeepSeek-R1-Distill-Llama-8B</tt>:</p>
         <div style="overflow-x: auto; margin: 1.5vh 0;">
         <table style="width: 100%; border-collapse: collapse; font-size: 95%;">
             <thead>
@@ -216,7 +211,7 @@
         <h1>Example Finding 2: Each benchmark has its own blindspots</h1>
 
         <p class="text">
-            Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave entirely untouched? Every benchmark but Vectara misses at least 30% of the dictionary.
+            Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave untested? The reasoning and math benchmarks cover the dictionary fairly densely (MATH and Vectara each leave under 15% untouched), but the factuality and bias benchmarks leave large holes &mdash; Natural Questions misses 54% and BBQ misses 67% of all concepts.
         </p>
     </div>
 
@@ -278,10 +273,10 @@
 
     <div class="container blog main">
 
-        <h1>Example Finding 3: Our method automatically uncovers sycophancy</h1>
+        <h1>Example Finding 3: The model has the <em>form</em> of math reasoning, not the <em>substance</em></h1>
 
         <p class="text">
-            The same pipeline, now scoring $\chi_{\text{model}}^{(c)}$, turns into a per-concept report card for the model. Llama's per-concept performance distribution is wide: the model is near-perfect on some concepts and close to zero on others.
+            The same pipeline, now scoring $\chi_{\text{model}}^{(c)}$, turns into a per-concept report card for the model. R1-Distill's per-concept performance distribution is wide (median 0.433): the model is near-perfect on some concepts and close to zero on others.
         </p>
     </div>
 
@@ -289,12 +284,12 @@
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
             <div id="cg-overall-performance" class="cg-plot" style="height: 380px;"></div>
         </div>
-        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Llama's per-concept performance</b> across all ten benchmarks. Wide variance, with a clear mass of near-zero concepts that the aggregate accuracy completely hides.</p>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>R1-Distill's per-concept performance</b> across all ten benchmarks. Wide variance, with a clear mass of near-zero concepts that the aggregate accuracy completely hides.</p>
     </div>
 
     <div class="container blog main">
         <p class="text">
-            When we rank concepts by $\chi_{\text{model}}^{(c)}$ and read the labels, a pattern jumps out: Llama is strongest on <em>helpful, agreeable, coding</em> concepts, and weakest on their near-opposites &mdash; <em>refusing, boundary-setting, pushing back</em>.
+            When we rank concepts by $\chi_{\text{model}}^{(c)}$ and read the labels, a pattern jumps out &mdash; and it is exactly the kind of pattern you'd expect from a <em>reasoning-distilled</em> model. R1-Distill is strongest on the <em>surface forms</em> of mathematical reasoning and weakest on its <em>substance</em>. (Filtered to concepts that activate in at least 5 benchmarks with &ge;&nbsp;50 supporting datapoints.)
         </p>
 
         <div style="overflow-x: auto; margin: 1.5vh 0;">
@@ -314,41 +309,17 @@
         </div>
 
         <p class="text">
-            <b>Read that pairing again.</b> The top says <em>"commitment to help"</em>. The bottom says <em>"reject or redirect inappropriate requests"</em>. These aren't unrelated weaknesses &mdash; they're the flip side of the same training-data incentive. Post-training pushes the model toward agreement; evaluation suites don't meaningfully measure the other direction, so nobody optimizes for it.
+            <b>Read that split again.</b> The top of the ranking is the <em>scaffolding</em> of chain-of-thought &mdash; declaring variables, emitting LaTeX, transitioning between reasoning steps with words like <em>"Alternatively"</em>. The bottom is where that scaffolding has to cash out into a correct number: <em>boxed numerical answers</em>, <em>multi-digit numbers</em>, and concrete <em>code syntax</em>. Distillation taught the model the <em>shape</em> of careful reasoning far more reliably than the <em>arithmetic</em> it is supposed to carry out. It looks like it is reasoning; it just gets the number wrong.
         </p>
 
         <p class="text">
-            The bottom of the ranking also surfaces some classic, anecdotally-known LLM weak spots &mdash; reassuring that CG is finding real things:
-        </p>
-        <ul style="margin-left: 3em !important;">
-            <li><p class="text"><b>Time reasoning</b>: <tt>(29324)</tt> "Historical date and time period formatting", <tt>(12644)</tt> "Cooking time durations"</p></li>
-            <li><p class="text"><b>Letter-level reasoning</b>: <tt>(56613)</tt> "Palindrome checking algorithms"</p></li>
-            <li><p class="text"><b>Arithmetic</b>: <tt>(64527)</tt> "Mathematical addition operator in calculations"</p></li>
-        </ul>
-        <p class="text">
-            and at least one cluster that, to our knowledge, hasn't been flagged in the literature: <em>appeals to intuition in reasoning</em> &mdash; concepts like <tt>(64413)</tt> "grokking and deep intuitive understanding" and <tt>(64540)</tt> "intuitive understanding and natural ease of use".
-        </p>
-
-        <p class="text">
-            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items that triggered those concepts. Below are two such items &mdash; one from LogicBench, one from WinoGrande &mdash; where an "intuitive understanding" concept fires strongly and Llama gets the answer wrong. The same pattern showing up across two different benchmarks rules out a dataset-specific fluke:
+            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items that triggered those concepts. Below are two such items &mdash; one from MATH, one from AGI&nbsp;Eval &mdash; where a "math substance" concept fires strongly and R1-Distill gets the answer wrong. The same kind of failure showing up across two different benchmarks rules out a dataset-specific fluke:
         </p>
     </div>
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
-        <div style="display: flex; gap: 2%; max-width: 100%; margin: 0 auto; align-items: stretch;">
-            <div style="flex: 1; display: flex; flex-direction: column;">
-                <div class="figure-card" style="flex: 1; display: flex; align-items: center;">
-                    <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64413-logicbench.png" alt="LogicBench example for intuitive understanding concept">
-                </div>
-                <p class="caption"><b>LogicBench item firing concept <tt>(64413)</tt>: "grokking and deep intuitive understanding."</b> Llama answers incorrectly, consistent with this concept being a model gap.</p>
-            </div>
-            <div style="flex: 1; display: flex; flex-direction: column;">
-                <div class="figure-card" style="flex: 1; display: flex; align-items: center;">
-                    <img src="figures/results/llama_3_1_9b/data_point_examples/intuitiveness/64540-winogrande.png" alt="WinoGrande example for intuitive understanding concept">
-                </div>
-                <p class="caption"><b>WinoGrande item firing concept <tt>(64540)</tt>: "intuitive understanding and natural ease of use."</b> Again, Llama misses it.</p>
-            </div>
-        </div>
+        <div id="cg-data-points" class="cg-plot"></div>
+        <p class="caption" style="margin-top: 1.2vh;">Real benchmark items where a math-substance concept fires strongly yet R1-Distill answers incorrectly ($\chi_{\text{model}} = 0$). The model produces fluent step-by-step working &mdash; the surface form &mdash; but lands on the wrong value.</p>
     </div>
 
     <div class="container blog main">
@@ -369,40 +340,18 @@
         <h1>Does it hold up?</h1>
 
         <p class="text">
-            Three sanity checks on Llama:
+            These are <em>examples</em> of what CG surfaces, so the natural question is whether the scores are stable enough to trust. In the paper we run three sanity checks on the method:
         </p>
 
         <ul style="margin-left: 3em !important;">
-            <li><p class="text"><b>Subsampling.</b> Re-running CG 100&times; while dropping 20% of each benchmark yields std&nbsp;=&nbsp;0.014 on $\chi_{\text{model}}$ and 0.025 on $\chi_{\text{bench}}$ &mdash; scores are stable.</p></li>
-            <li><p class="text"><b>Adversarial ablation.</b> Deleting &lt;1% of data aligned with the top-100 best-performing concepts drops median $\chi_{\text{model}}$ by 0.6%; doing the same for the worst-performing concepts raises it by 1.3%. The score moves in the direction CG predicts.</p></li>
-            <li><p class="text"><b>Different SAE, same story.</b> Swap Llama's SAE for Gemma 2 2B's (3&times; smaller dictionary, different model) and the coverage/performance distributions have the same shape; the top and bottom concepts line up interpretively.</p></li>
+            <li><p class="text"><b>Subsampling.</b> Re-running CG many times while dropping 20% of each benchmark leaves the per-concept scores essentially unchanged &mdash; the rankings are not driven by a handful of items.</p></li>
+            <li><p class="text"><b>Adversarial ablation.</b> Removing the small slice of data aligned with the top-performing concepts lowers median $\chi_{\text{model}}$, and removing the slice aligned with the worst-performing concepts raises it &mdash; the score moves in the direction CG predicts.</p></li>
+            <li><p class="text"><b>Different SAE, same story.</b> Swapping in an SAE trained on a different model yields coverage/performance distributions of the same shape, with the top and bottom concepts lining up interpretively.</p></li>
         </ul>
 
-        <div style="overflow-x: auto; margin: 1.5vh 0;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 92%;">
-            <thead>
-                <tr>
-                    <th style="text-align:left; padding: 0.4em 0.8em; width: 18%;">Analysis</th>
-                    <th style="text-align:left; padding: 0.4em 0.8em;">Llama SAE</th>
-                    <th style="text-align:left; padding: 0.4em 0.8em;">Gemma SAE (on Llama data)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td style="padding: 0.4em 0.8em;"><em>Best perf.</em></td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(45314)</tt> Legal reasoning in multiple choice</td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(5471)</tt> References to legal cases / law procedure</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>Worst perf.</em></td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(2874)</tt> Mathematical differentiation operators</td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(13908)</tt> Numerical values / counts / measurements</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>Best cov.</em></td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(41290)</tt> Conversation/topic boundary marker</td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(11527)</tt> The start of a document</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>Worst cov.</em></td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(27900)</tt> Factual accuracy &amp; consistency checking</td>
-                    <td style="padding: 0.4em 0.8em;"><tt>(5657)</tt> Correctness/accuracy in answers</td></tr>
-            </tbody>
-        </table>
-        </div>
+        <p class="text" style="font-size: 90%; color: #666;">
+            (The quantitative robustness numbers and cross-SAE comparison reported in the paper were measured on the original Llama deployment; the same checks are being re-run for DeepSeek-R1-Distill-Llama-8B.)
+        </p>
 
     </div>
 
@@ -479,6 +428,7 @@
           CGPlots.perBenchmarkGrid("cg-coverage-grid", DATA + "coverage_hist_per_benchmark.json");
           CGPlots.overallHistogram("cg-overall-performance", DATA + "overall_performance_hist.json");
           CGPlots.perBenchmarkGrid("cg-performance-grid", DATA + "performance_hist_per_benchmark.json");
+          CGPlots.dataPointExamples("cg-data-points", DATA + "data_point_examples.json");
         }
         if (document.readyState === "loading") {
           document.addEventListener("DOMContentLoaded", start);

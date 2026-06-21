@@ -334,10 +334,69 @@
     return `rgba(${r},${g},${b},${a})`;
   }
 
+  // ========================================================
+  // 5. Data-point examples (real benchmark items that fired a concept
+  //    and that the model got wrong) — rendered as responsive cards.
+  // ========================================================
+  function dataPointExamples(elId, jsonUrl) {
+    const el = document.getElementById(elId);
+    if (!el) return Promise.resolve();
+    setLoading(el);
+    return getJSON(jsonUrl)
+      .then((items) => {
+        el.innerHTML = "";
+        const row = document.createElement("div");
+        row.className = "cg-dp-row";
+        el.appendChild(row);
+        items.forEach((it) => {
+          const card = document.createElement("div");
+          card.className = "cg-dp-card";
+
+          const head = document.createElement("div");
+          head.className = "cg-dp-head";
+          head.innerHTML =
+            '<span class="cg-dp-concept"><tt>(' + it.concept_id + ')</tt> ' +
+            escapeHtml(it.concept) + "</span>" +
+            '<span class="cg-dp-bench">' + escapeHtml(it.benchmark_display) + "</span>";
+          card.appendChild(head);
+
+          const body = document.createElement("div");
+          body.className = "cg-dp-body";
+          // Escape currency dollar signs ("$100") so MathJax doesn't mistake
+          // them for inline-math delimiters; real LaTeX ($\triangle$) is kept.
+          // The page's MathJax config has processEscapes:true, so "\$" renders
+          // as a literal dollar sign.
+          body.textContent = it.prompt.replace(/\$(?=\d)/g, "\\$");
+          card.appendChild(body);
+
+          const foot = document.createElement("div");
+          foot.className = "cg-dp-foot";
+          foot.innerHTML =
+            '<span class="cg-dp-wrong">✗ answered incorrectly</span>' +
+            '<span class="cg-dp-stat">concept saliency ' + it.saliency.toFixed(3) +
+            " · <i>χ</i><sub>model</sub> = " + it.chi_model.toFixed(3) + "</span>";
+          card.appendChild(foot);
+
+          row.appendChild(card);
+        });
+        // re-typeset LaTeX in the injected prompts (MathJax v2)
+        if (global.MathJax && global.MathJax.Hub) {
+          global.MathJax.Hub.Queue(["Typeset", global.MathJax.Hub, el]);
+        }
+      })
+      .catch((e) => setError(el, e));
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
   global.CGPlots = {
     overallHistogram,
     missingBar,
     jaccard,
     perBenchmarkGrid,
+    dataPointExamples,
   };
 })(window);
