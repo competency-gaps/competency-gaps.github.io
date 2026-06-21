@@ -356,45 +356,92 @@
       .then((items) => {
         el.innerHTML = "";
         const row = document.createElement("div");
-        row.className = "cg-dp-row";
+        row.className = "cg-ex-row";
         el.appendChild(row);
         items.forEach((it) => {
-          const card = document.createElement("div");
-          card.className = "cg-dp-card";
-
-          const head = document.createElement("div");
-          head.className = "cg-dp-head";
-          head.innerHTML =
-            '<span class="cg-dp-concept"><tt>(' + it.concept_id + ')</tt> ' +
-            escapeHtml(it.concept) + "</span>" +
-            '<span class="cg-dp-bench">' + escapeHtml(it.benchmark_display) + "</span>";
-          card.appendChild(head);
-
-          const body = document.createElement("div");
-          body.className = "cg-dp-body";
-          // Escape currency dollar signs ("$100") so MathJax doesn't mistake
-          // them for inline-math delimiters; real LaTeX ($\triangle$) is kept.
-          // The page's MathJax config has processEscapes:true, so "\$" renders
-          // as a literal dollar sign.
-          body.textContent = it.prompt.replace(/\$(?=\d)/g, "\\$");
-          card.appendChild(body);
-
-          const foot = document.createElement("div");
-          foot.className = "cg-dp-foot";
-          foot.innerHTML =
-            '<span class="cg-dp-wrong">✗ answered incorrectly</span>' +
-            '<span class="cg-dp-stat">concept saliency ' + it.saliency.toFixed(3) +
-            " · <i>χ</i><sub>model</sub> = " + it.chi_model.toFixed(3) + "</span>";
-          card.appendChild(foot);
-
-          row.appendChild(card);
+          row.appendChild(buildExampleCard(it));
         });
-        // re-typeset LaTeX in the injected prompts (MathJax v2)
-        if (global.MathJax && global.MathJax.Hub) {
-          global.MathJax.Hub.Queue(["Typeset", global.MathJax.Hub, el]);
-        }
       })
       .catch((e) => setError(el, e));
+  }
+
+  // A single iMessage-style example card: prompt + response chat bubbles,
+  // then an annotations / top-concepts footer.
+  function buildExampleCard(it) {
+    const card = document.createElement("div");
+    card.className = "cg-ex";
+
+    const chat = document.createElement("div");
+    chat.className = "cg-ex-chat";
+    chat.appendChild(chatTurn("prompt", "Prompt", it.prompt));
+    chat.appendChild(chatTurn("resp", "LLM Response", it.response));
+    card.appendChild(chat);
+
+    const hr = document.createElement("hr");
+    hr.className = "cg-ex-divider";
+    card.appendChild(hr);
+
+    const meta = document.createElement("div");
+    meta.className = "cg-ex-meta";
+
+    const annot = document.createElement("div");
+    annot.className = "cg-ex-annot";
+    annot.appendChild(metaTitle("Annotations"));
+    annot.appendChild(pill("Bench:", it.benchmark_display, false));
+    annot.appendChild(pill("Status:", it.status, true));
+    meta.appendChild(annot);
+
+    const concepts = document.createElement("div");
+    concepts.className = "cg-ex-concepts";
+    concepts.appendChild(metaTitle("Top Concepts"));
+    const grid = document.createElement("div");
+    grid.className = "cg-ex-concept-grid";
+    (it.concepts || []).forEach((c) => {
+      const box = document.createElement("div");
+      box.className = "cg-ex-concept";
+      const id = document.createElement("b");
+      id.textContent = String(c.id);
+      box.appendChild(id);
+      box.appendChild(document.createTextNode(" " + c.description));
+      grid.appendChild(box);
+    });
+    concepts.appendChild(grid);
+    meta.appendChild(concepts);
+
+    card.appendChild(meta);
+    return card;
+  }
+
+  function chatTurn(kind, label, text) {
+    const turn = document.createElement("div");
+    turn.className = "cg-ex-turn cg-ex-turn-" + kind;
+    const lab = document.createElement("div");
+    lab.className = "cg-ex-label";
+    lab.textContent = label;
+    const bubble = document.createElement("div");
+    bubble.className = "cg-ex-bubble cg-ex-bubble-" + kind;
+    bubble.textContent = text;
+    turn.appendChild(lab);
+    turn.appendChild(bubble);
+    return turn;
+  }
+
+  function metaTitle(text) {
+    const t = document.createElement("div");
+    t.className = "cg-ex-meta-title";
+    t.textContent = text;
+    return t;
+  }
+
+  function pill(key, value, bad) {
+    const p = document.createElement("div");
+    p.className = "cg-ex-pill" + (bad ? " cg-ex-pill-bad" : "");
+    p.appendChild(document.createTextNode(key));
+    p.appendChild(document.createElement("br"));
+    const v = document.createElement("b");
+    v.textContent = value;
+    p.appendChild(v);
+    return p;
   }
 
   function escapeHtml(s) {
