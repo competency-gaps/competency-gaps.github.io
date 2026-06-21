@@ -19,6 +19,7 @@
 
     <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/main_free.css" />
     <link rel="stylesheet" type="text/css" media="all" href="clarity/clarity.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/cg-plots.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/foundation.min.css">
     <link href="assets/fontawesome-free-6.6.0-web/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,6 +69,9 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Interactive Competency-Gaps plots (DeepSeek-R1-Distill-Llama-8B) -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+    <script src="assets/scripts/cg-plots.js" defer></script>
 </head>
 
 <body onload="if (document.activeElement) document.activeElement.blur();">
@@ -163,7 +167,7 @@
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/overall_cg_bench_histogram--flipped.png" alt="Cross-benchmark coverage distribution">
+            <div id="cg-overall-coverage" class="cg-plot" style="height: 380px;"></div>
         </div>
         <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Cross-benchmark coverage is extremely uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail. The orange curve (SAE from a <em>different</em> model) shows the same shape.</p>
     </div>
@@ -189,6 +193,22 @@
             <li><p class="text"><tt>(2641)</tt> "The assistant needs to explain its limitations or capabilities"</p></li>
             <li><p class="text"><tt>(2009)</tt> "Regulatory classification and compliance requirements"</p></li>
         </ul>
+
+        <p class="text" style="margin-top: 1.5em;">A representative slice of the concepts missing from the full suite under <tt>DeepSeek-R1-Distill-Llama-8B</tt>:</p>
+        <div style="overflow-x: auto; margin: 1.5vh 0;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 95%;">
+            <thead>
+                <tr><th style="text-align:left; padding: 0.4em 0.8em; width: 12%;">ID</th><th style="text-align:left; padding: 0.4em 0.8em;">Concept description</th></tr>
+            </thead>
+            <tbody>
+                <tr><td style="padding: 0.4em 0.8em;"><tt>(4492)</tt></td><td style="padding: 0.4em 0.8em;">Mathematical reasoning and trigonometry</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><tt>(5054)</tt></td><td style="padding: 0.4em 0.8em;">Text that contains mathematical reasoning including variables, angles, equations, and calculations</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><tt>(3936)</tt></td><td style="padding: 0.4em 0.8em;">The word &ldquo;opinion&rdquo; and its derivatives</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><tt>(12843)</tt></td><td style="padding: 0.4em 0.8em;">Code snippets relating to requests, tags, and parameters</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><tt>(799)</tt></td><td style="padding: 0.4em 0.8em;">Words ending in &ldquo;ic, ics, ist, ied, al&rdquo; or their inflections</td></tr>
+            </tbody>
+        </table>
+        </div>
     </div>
 
     <div class="container blog main">
@@ -202,7 +222,7 @@
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/missing_concepts_percentage_by_benchmark.png" alt="Missing concept percentages">
+            <div id="cg-missing-bar" class="cg-plot" style="height: 420px;"></div>
         </div>
         <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Fraction of the SAE dictionary untested by each benchmark.</b> Single benchmarks leave huge portions of the concept space unmeasured.</p>
     </div>
@@ -215,7 +235,7 @@
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
         <div class="figure-card" style="max-width: 72%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/benchmark_overlap_heatmap.png" alt="Benchmark overlap heatmap">
+            <div id="cg-jaccard" class="cg-plot" style="height: 560px;"></div>
         </div>
         <p class="caption" style="max-width: 72%; margin: 0 auto;"><b>Benchmark-pair Jaccard overlap.</b> Many benchmarks in a &ldquo;diverse&rdquo; suite end up testing overlapping concept profiles &mdash; more redundancy than you'd expect.</p>
     </div>
@@ -228,7 +248,7 @@
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
         <div class="figure-card" style="max-width: 100%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/cg_bench_histograms_per_benchmark.png" alt="Per-benchmark coverage distributions">
+            <div id="cg-coverage-grid" class="cg-plot"></div>
         </div>
         <p class="caption"><b>Per-benchmark coverage distributions</b> are all right-skewed &mdash; each benchmark's score is dominated by a small set of high-activation concepts.</p>
     </div>
@@ -244,12 +264,12 @@
                 <tr><th style="text-align:left; padding: 0.4em 0.8em;">Benchmark</th><th style="text-align:left; padding: 0.4em 0.8em;">ID</th><th style="text-align:left; padding: 0.4em 0.8em;">Missing concept the benchmark probably <em>should</em> test</th></tr>
             </thead>
             <tbody>
-                <tr><td style="padding: 0.4em 0.8em;"><em>AGIEval</em></td><td style="padding: 0.4em 0.8em;"><tt>(33456)</tt></td><td style="padding: 0.4em 0.8em;">The need for thorough and objective assessment of evidence</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>AGIEval</em></td><td style="padding: 0.4em 0.8em;"><tt>(59559)</tt></td><td style="padding: 0.4em 0.8em;">Careful qualification and nuanced explanation of complex topics</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>LogicBench</em></td><td style="padding: 0.4em 0.8em;"><tt>(56997)</tt></td><td style="padding: 0.4em 0.8em;">Explaining how different elements or factors relate to each other</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>LogicBench</em></td><td style="padding: 0.4em 0.8em;"><tt>(11957)</tt></td><td style="padding: 0.4em 0.8em;">Mathematical and logical concepts across multiple languages</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>SocialIQA</em></td><td style="padding: 0.4em 0.8em;"><tt>(35877)</tt></td><td style="padding: 0.4em 0.8em;">Speaker defending or explaining planned actions against expectations</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>SocialIQA</em></td><td style="padding: 0.4em 0.8em;"><tt>(1897)</tt></td><td style="padding: 0.4em 0.8em;">Instructions about how someone should behave or what qualities to embody</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><em>AGI Eval</em></td><td style="padding: 0.4em 0.8em;"><tt>(699)</tt></td><td style="padding: 0.4em 0.8em;">Mentions of museums or libraries, or potentially things you might find in those places</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><em>AGI Eval</em></td><td style="padding: 0.4em 0.8em;"><tt>(30886)</tt></td><td style="padding: 0.4em 0.8em;">Information about Arabic media sources</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><em>LogicBench</em></td><td style="padding: 0.4em 0.8em;"><tt>(24511)</tt></td><td style="padding: 0.4em 0.8em;">Words related to math problems and solutions</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><em>LogicBench</em></td><td style="padding: 0.4em 0.8em;"><tt>(8523)</tt></td><td style="padding: 0.4em 0.8em;">The word &ldquo;multiple&rdquo; or &ldquo;multiples&rdquo; appearing in mathematical contexts</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><em>Social IQA</em></td><td style="padding: 0.4em 0.8em;"><tt>(8971)</tt></td><td style="padding: 0.4em 0.8em;">Code comments and code fragments</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><em>Social IQA</em></td><td style="padding: 0.4em 0.8em;"><tt>(17303)</tt></td><td style="padding: 0.4em 0.8em;">The words &ldquo;root&rdquo; or &ldquo;roots&rdquo;, as well as legal terms</td></tr>
             </tbody>
         </table>
         </div>
@@ -267,7 +287,7 @@
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/overall_cg_model_histogram--flipped.png" alt="Cross-benchmark performance distribution">
+            <div id="cg-overall-performance" class="cg-plot" style="height: 380px;"></div>
         </div>
         <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Llama's per-concept performance</b> across all ten benchmarks. Wide variance, with a clear mass of near-zero concepts that the aggregate accuracy completely hides.</p>
     </div>
@@ -283,11 +303,12 @@
                 <tr><th style="text-align:left; padding: 0.4em 0.8em; width: 14%;">Rank</th><th style="text-align:left; padding: 0.4em 0.8em; width: 10%;">ID</th><th style="text-align:left; padding: 0.4em 0.8em;">Concept</th></tr>
             </thead>
             <tbody>
-                <tr><td style="padding: 0.4em 0.8em;"><b>Top concepts</b></td><td style="padding: 0.4em 0.8em;"><tt>(20022)</tt></td><td style="padding: 0.4em 0.8em;">Iteration or traversal through sequences in programming</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(24074)</tt></td><td style="padding: 0.4em 0.8em;">The assistant is about to provide an illustrative example</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(2461)</tt></td><td style="padding: 0.4em 0.8em;">Assistant expressing commitment to help or do its best</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><b>Bottom concepts</b></td><td style="padding: 0.4em 0.8em;"><tt>(26535)</tt></td><td style="padding: 0.4em 0.8em;">The assistant needs to politely reject or redirect inappropriate requests</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(56928)</tt></td><td style="padding: 0.4em 0.8em;">Maintaining professional boundaries while offering appropriate help</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><b>Best performance</b></td><td style="padding: 0.4em 0.8em;"><tt>(14585)</tt></td><td style="padding: 0.4em 0.8em;">Mentions of variables, specifically within mathematical or logical reasoning</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(17004)</tt></td><td style="padding: 0.4em 0.8em;">LaTeX math code</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(17718)</tt></td><td style="padding: 0.4em 0.8em;">The word &ldquo;Alternatively&rdquo;, used to introduce different reasoning steps to solve math problems</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"><b>Worst performance</b></td><td style="padding: 0.4em 0.8em;"><tt>(32637)</tt></td><td style="padding: 0.4em 0.8em;">Boxed numerical answers in a mathematical context</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(24736)</tt></td><td style="padding: 0.4em 0.8em;">Multi-digit numbers</td></tr>
+                <tr><td style="padding: 0.4em 0.8em;"></td><td style="padding: 0.4em 0.8em;"><tt>(9878)</tt></td><td style="padding: 0.4em 0.8em;">Code blocks in C# with curly braces</td></tr>
             </tbody>
         </table>
         </div>
@@ -338,7 +359,7 @@
 
     <div class="container blog main gray" style="padding-top: 3vh; padding-bottom: 1.5vh;">
         <div class="figure-card" style="max-width: 100%; margin: 0 auto;">
-            <img src="figures/results/llama_3_1_9b/cg_model_histograms_per_benchmark.png" alt="Per-benchmark performance distributions">
+            <div id="cg-performance-grid" class="cg-plot"></div>
         </div>
         <p class="caption"><b>Per-benchmark performance distributions.</b> The headline accuracy for each benchmark is a weighted average over this spread.</p>
     </div>
@@ -445,5 +466,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script src="clarity/clarity.js"></script>
+
+    <!-- Render interactive DeepSeek-R1-Distill-Llama-8B plots from cached compact JSON -->
+    <script>
+      (function () {
+        var DATA = "figures/results/deepseek_r1_distill_llama_8b/data/";
+        function start() {
+          if (!window.CGPlots || !window.Plotly) { return setTimeout(start, 60); }
+          CGPlots.overallHistogram("cg-overall-coverage", DATA + "overall_coverage_hist.json");
+          CGPlots.missingBar("cg-missing-bar", DATA + "missing_by_benchmark.json");
+          CGPlots.jaccard("cg-jaccard", DATA + "benchmark_jaccard.json");
+          CGPlots.perBenchmarkGrid("cg-coverage-grid", DATA + "coverage_hist_per_benchmark.json");
+          CGPlots.overallHistogram("cg-overall-performance", DATA + "overall_performance_hist.json");
+          CGPlots.perBenchmarkGrid("cg-performance-grid", DATA + "performance_hist_per_benchmark.json");
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", start);
+        } else {
+          start();
+        }
+      })();
+    </script>
 </body>
 </html>

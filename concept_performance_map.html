@@ -290,7 +290,7 @@
     </div>
     <div class="evaluating" role="status" aria-live="polite">
       <span class="evaluating-dot" aria-hidden="true"></span>
-      <span>Evaluating: <span id="evaluatingValue">Llama 3 8B-IT</span></span>
+      <span>Evaluating: <span id="evaluatingValue">DeepSeek-R1-Distill-Llama-8B</span></span>
     </div>
   </div>
 
@@ -325,7 +325,7 @@
   // ==================== Mode configuration ====================
   const MODE_INFO = {
     model: {
-      label: 'Llama 3 8B-IT',
+      label: 'DeepSeek-R1-Distill-Llama-8B',
       legendTitle: 'Model Performance',
       overallLabel: '<i>&chi;</i><sub>model</sub>',
       levels: ['very poor', 'poor', 'medium', 'good', 'very good'],
@@ -799,6 +799,9 @@
     const valueEl  = document.getElementById('evaluatingValue');
     const original = valueEl.textContent;
 
+    // Let the pill size to its content while measuring (the CSS sets a fixed
+    // width, which would otherwise clip longer model names).
+    pill.style.width = 'auto';
     let maxWidth = 0;
     for (const info of Object.values(MODE_INFO)) {
       valueEl.textContent = info.label;
@@ -806,7 +809,7 @@
     }
 
     valueEl.textContent = original;
-    pill.style.width = maxWidth + 'px';
+    pill.style.width = Math.ceil(maxWidth) + 'px';
   }
 
   // ==================== Global listeners ====================
