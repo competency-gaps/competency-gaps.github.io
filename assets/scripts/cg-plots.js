@@ -301,14 +301,23 @@
         const log_y = d.log_y;
         renderQueue.forEach(({ plotDiv, panel }) => {
           const trace = histTrace(panel, BLUE);
+          // Keep the y axis labels tiny: compact SI ticks ("10k", "2k"), no
+          // log minor labels, a small fixed left margin (no automargin growth).
           const yaxis = {
             gridcolor: GRID, zeroline: false, color: AXIS,
-            tickfont: { size: 10 }, automargin: true,
+            tickfont: { size: 9 }, automargin: false, ticklen: 0,
           };
-          if (log_y) yaxis.type = "log";
+          if (log_y) {
+            yaxis.type = "log";
+            yaxis.dtick = 1;            // decade ticks only — drops the 5/2 clutter
+            yaxis.exponentformat = "SI"; // 10, 100, 1k, 10k
+          } else {
+            yaxis.tickformat = "~s";     // 500, 1k, 2k
+            yaxis.nticks = 4;
+          }
           const layout = fontLayout({
             height: 188,
-            margin: { l: 42, r: 8, t: 4, b: 34 },
+            margin: { l: 26, r: 8, t: 6, b: 34 },
             bargap: 0.03,
             xaxis: {
               title: { text: chiLabel(d.xlabel), font: { size: 12 } },
