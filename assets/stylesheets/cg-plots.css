@@ -126,9 +126,9 @@
 /* ---------- Qualitative example cards (iMessage-style, side by side) ---------- */
 .cg-ex-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    gap: 22px;
-    align-items: start;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
     width: 100%;
 }
 .cg-ex {
@@ -147,6 +147,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    margin-bottom: 18px;
 }
 .cg-ex-turn {
     display: flex;
@@ -181,12 +182,14 @@
     border-bottom-left-radius: 5px;
 }
 
-/* Divider + footer */
+/* Divider + footer. margin-top:auto anchors the divider + footer to the bottom
+   of the (stretched, equal-height) card, so a shorter card gets whitespace
+   between its last chat bubble and the divider. */
 .cg-ex-divider {
     border: 0;
     border-top: 1.5px solid #e6e6e6;
     width: 100%;
-    margin: 18px 0 16px;
+    margin: auto 0 16px;
 }
 .cg-ex-meta {
     display: grid;
@@ -234,6 +237,10 @@
 }
 .cg-ex-concept b { font-weight: 700; }
 
+/* Stack the two example cards at the same breakpoint the teaser/app pairs use. */
+@media (max-width: 768px) {
+    .cg-ex-row { grid-template-columns: 1fr; }
+}
 @media (max-width: 520px) {
     .cg-ex-meta { grid-template-columns: 1fr; gap: 14px; }
     .cg-ex-concept-grid { grid-template-columns: 1fr; }
