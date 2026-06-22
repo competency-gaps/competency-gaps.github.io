@@ -170,6 +170,11 @@
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cg-ex-bubble:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.13);
 }
 .cg-ex-bubble-prompt {
     background: #0b93f6;

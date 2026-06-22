@@ -31,7 +31,7 @@
         paper_bgcolor: "rgba(0,0,0,0)",
         plot_bgcolor: "rgba(0,0,0,0)",
         margin: { l: 56, r: 16, t: 16, b: 48 },
-        hoverlabel: { font: { family: FONT, size: 12 }, bgcolor: "#111", bordercolor: "#111" },
+        hoverlabel: { font: { family: FONT, size: 12, color: "#fff" }, bgcolor: "#111", bordercolor: "#111" },
         bargap: 0.04,
       },
       extra || {}
@@ -220,8 +220,10 @@
         };
         const layout = fontLayout({
           margin: { l: 118, r: 10, t: 8, b: 104 },
-          xaxis: { tickangle: -40, color: AXIS, automargin: true },
-          yaxis: { autorange: "reversed", color: AXIS, automargin: true },
+          xaxis: { tickangle: -40, color: AXIS, automargin: true, constrain: "domain" },
+          // scaleanchor keeps the cells square regardless of the container width
+          // so the matrix renders as a true square, not a stretched rectangle.
+          yaxis: { autorange: "reversed", color: AXIS, automargin: true, scaleanchor: "x", constrain: "domain" },
         });
         el.innerHTML = "";
         return global.Plotly.newPlot(el, [trace], layout, BASE_CONFIG);
