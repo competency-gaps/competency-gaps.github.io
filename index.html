@@ -353,7 +353,7 @@
         </p>
 
         <p class="text">
-            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items and inspect the concepts that fired on them. Below are two such items &mdash; one from LogicBench, one from WinoGrande &mdash; where the most strongly-firing concepts coincide with an incorrect answer from R1-Distill. The same kind of failure showing up across two different benchmarks rules out a dataset-specific fluke:
+            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items and inspect the concepts that fired on them. Below are two MATH problems where the single most strongly-firing concept is the very machinery of careful arithmetic &mdash; <tt>(31763)</tt> "intermediate values in arithmetic calculations performed step by step" &mdash; and yet R1-Distill still lands on the wrong number. It produces the <em>form</em> of a worked solution without the <em>substance</em>:
         </p>
     </div>
 
