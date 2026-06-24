@@ -148,15 +148,15 @@
     <div class="container blog main first" id="blog-main">
 
         <fieldset class="insights-box">
-            <legend>What You'll See Below &mdash; An Example Application of the Method</legend>
-            <p style="margin: 0 0 0.8em 0;">A walkthrough of the kinds of insights Competency Gaps surfaces, using <tt>DeepSeek-R1-Distill-Llama-8B</tt> across ten benchmarks as a running example.</p>
+            <legend>What You'll See Below: An Example Application of the Method</legend>
+            <p style="margin: 0 0 0.8em 0;">A walkthrough of the kinds of insights Competency Gaps surfaces, using <tt>DeepSeek-R1-Distill-Llama-8B</tt> across ten popular benchmarks as a running example.</p>
             <ul style="margin-left: 1.5em; margin-bottom: 0;">
                 <li style="margin-bottom: 0.6em;">A handful of concepts dominate almost every benchmark and drive the aggregate scores we all report.</li>
-                <li style="margin-bottom: 0.6em;">Each benchmark leaves much of its own concept space barely tested, sometimes including concepts central to its stated purpose (e.g., LogicBench under-tests <em>words related to math problems and solutions</em>).</li>
-                <li style="margin-bottom: 0.6em;">R1-Distill is strong on the <em>surface forms</em> of math reasoning (variables, LaTeX, reasoning-step transitions) but weak on its <em>substance</em>: multi-digit arithmetic, boxed numerical answers, and code syntax.</li>
-                <li style="margin-bottom: 0.0em;">The patterns are consistent across benchmarks &mdash; the same concept shows up as a weakness on more than one dataset, not just one.</li>
+                <li style="margin-bottom: 0.6em;">Each benchmark leaves much of its own concept space barely tested, sometimes including concepts central to its stated purpose (e.g., LogicBench under-tests <em>math problems and solutions</em>).</li>
+                <li style="margin-bottom: 0.6em;">R1-Distill is strong on the <em>surface forms</em> of reasoning (variables, LaTeX, reasoning-step transitions) but weak on its <em>substance</em>: multi-digit arithmetic, boxed numerical answers, and code syntax.</li>
+                <li style="margin-bottom: 0.0em;">The patterns are consistent across benchmarks: the same concept shows up as a weakness on more than one dataset, not just one.</li>
             </ul>
-            <p style="margin: 0.8em 0 0 0; font-style: italic;">These are just examples applying the method to a single model.</p>
+            <p style="margin: 0.8em 0 0 0; font-style: italic;">These are just examples applying our method to a single model. You can apply CG to any model and benchmark suite of your choosing.</p>
         </fieldset>
 
     </div>
@@ -201,7 +201,7 @@
         <h1>Example Finding 1: A few concepts dominate every benchmark</h1>
 
         <p class="text">
-            Running CG on DeepSeek-R1-Distill-Llama-8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~32k concepts. The result is brutally right-skewed:
+            Running CG on DeepSeek-R1-Distill-Llama-8B across ten popular benchmarks (GSM8K, MATH, AGIEval, LogicBench, SocialIQA, WinoGrande, BBQ, CrowS-Pairs, Vectara, and Natural Questions), we plot the distribution of $\chi_{\text{bench}}^{(c)}$ across all ~32k concepts. The result is heavily right-skewed:
         </p>
     </div>
 
@@ -209,41 +209,29 @@
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
             <div id="cg-overall-coverage" class="cg-plot" style="height: 380px;"></div>
         </div>
-        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Cross-benchmark coverage is extremely uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail.</p>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Cross-benchmark coverage is uneven.</b> The distribution of $\chi_{\text{bench}}^{(c)}$ across all concepts shows that a few concepts dominate coverage while the vast majority are barely tested. Any mean-based aggregate score is driven by this tail.</p>
     </div>
 
     <div class="container blog main">
         <p class="text">
-            What sits in the fat right tail? Concepts like:
+            What sits in the right tail? Concepts like:
         </p>
         <ul style="margin-left: 3em !important;">
             <li><p class="text"><tt>(31763)</tt> "Intermediate values in arithmetic calculations performed step by step"</p></li>
             <li><p class="text"><tt>(21132)</tt> "Geometrical terms, especially discussing 3-D shapes and angles"</p></li>
-            <li><p class="text"><tt>(9347)</tt> "The word &lsquo;each&rsquo; used to describe something that occurs repeatedly"</p></li>
         </ul>
         <p class="text">
-            Some of this is substantive (the arithmetic and geometric scaffolding of chain-of-thought). Much of it is ambient structure (counting and repetition cues). Either way, it disproportionately shapes the aggregate number &mdash; and for this reasoning-distilled model the tail leans heavily toward math/reasoning machinery.
+            For this reasoning-distilled model, the tail leans heavily toward math/reasoning-coded concepts. Some of these are substantive, but many are tracking the form and structure more than the actual reasoning steps. Either way, these concepts disproportionately shape the aggregate, reported number.
         </p>
 
         <p class="text">
-            At the other end, <b>no concept is entirely absent</b> from the suite (every concept fires somewhere), but <b>2,730 concepts (~8.5%) are barely touched</b> &mdash; effectively untested. These include things you might reasonably want to measure:
+            At the other end, <b>2,730 concepts (~8.5%)</b> are effectively untested. These include things you might reasonably want to measure:
         </p>
-
-        <p class="text" style="margin-top: 1.5em;">A representative slice of the concepts that go (nearly) untested across the full suite under <tt>DeepSeek-R1-Distill-Llama-8B</tt>:</p>
-        <div style="overflow-x: auto; margin: 1.5vh 0;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 95%;">
-            <thead>
-                <tr><th style="text-align:left; padding: 0.4em 0.8em; width: 12%;">ID</th><th style="text-align:left; padding: 0.4em 0.8em;">Concept description</th></tr>
-            </thead>
-            <tbody>
-                <tr><td style="padding: 0.4em 0.8em;"><tt>(4492)</tt></td><td style="padding: 0.4em 0.8em;">Mathematical reasoning and trigonometry</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><tt>(5054)</tt></td><td style="padding: 0.4em 0.8em;">Text that contains mathematical reasoning including variables, angles, equations, and calculations</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><tt>(3936)</tt></td><td style="padding: 0.4em 0.8em;">The word &ldquo;opinion&rdquo; and its derivatives</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><tt>(12843)</tt></td><td style="padding: 0.4em 0.8em;">Code snippets relating to requests, tags, and parameters</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><tt>(799)</tt></td><td style="padding: 0.4em 0.8em;">Words ending in &ldquo;ic, ics, ist, ied, al&rdquo; or their inflections</td></tr>
-            </tbody>
-        </table>
-        </div>
+        <ul style="margin-left: 3em !important;">
+            <li><p class="text"><tt>(4492)</tt> "Mathematical reasoning and trigonometry"</p></li>
+            <li><p class="text"><tt>(5054)</tt> "Text that contains mathematical reasoning including variables, angles, equations, and calculations"</p></li>
+            <li><p class="text"><tt>(12843)</tt> "Code snippets relating to requests, tags, and parameters"</p></li>
+        </ul>
     </div>
 
     <div class="container blog main">
@@ -251,7 +239,7 @@
         <h1>Example Finding 2: Each benchmark has its own blindspots</h1>
 
         <p class="text">
-            Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave untested? The reasoning and math benchmarks cover the dictionary fairly densely (MATH and Vectara each leave under 15% untouched), but the factuality and bias benchmarks leave large holes &mdash; Natural Questions misses 54% and BBQ misses 67% of all concepts.
+            Zoom in on individual benchmarks and the same story shows up in three different shapes. First: how much of the concept space does each benchmark leave untested? The reasoning and math benchmarks cover the dictionary fairly densely (MATH and Vectara each leave under 15% untouched), but the factuality and bias benchmarks leave large holes: for example, Natural Questions misses 54% and BBQ misses 67% of all concepts.
         </p>
     </div>
 
@@ -264,7 +252,7 @@
 
     <div class="container blog main">
         <p class="text">
-            Next: you might hope that combining several benchmarks into a "diverse suite" would fill those holes. Often it doesn't &mdash; the benchmarks end up overlapping heavily in <em>what</em> they test, not just <em>how much</em>.
+            Next: you might hope that combining several benchmarks into a diverse suite would fill those holes. Often it doesn't; the benchmarks end up overlapping heavily in <em>what</em> they test, not just <em>how much</em>.
         </p>
     </div>
 
@@ -272,7 +260,7 @@
         <div class="figure-card" style="max-width: 62%; margin: 0 auto;">
             <div id="cg-jaccard" class="cg-plot" style="height: 420px;"></div>
         </div>
-        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Benchmark-pair Jaccard overlap.</b> Many benchmarks in a &ldquo;diverse&rdquo; suite end up testing overlapping concept profiles &mdash; more redundancy than you'd expect.</p>
+        <p class="caption" style="max-width: 62%; margin: 0 auto;"><b>Benchmark-pair Jaccard overlap.</b> Many benchmarks in a seemingly diverse suite end up testing overlapping concept profiles, with more redundancy than you'd expect.</p>
     </div>
 
     <div class="container blog main">
@@ -285,12 +273,12 @@
         <div class="figure-card" style="max-width: 100%; margin: 0 auto;">
             <div id="cg-coverage-grid" class="cg-plot"></div>
         </div>
-        <p class="caption"><b>Per-benchmark coverage distributions</b> are all right-skewed &mdash; each benchmark's score is dominated by a small set of high-activation concepts.</p>
+        <p class="caption"><b>Per-benchmark coverage distributions</b> are all right-skewed. Each benchmark's score is dominated by a small set of high-activation concepts.</p>
     </div>
 
     <div class="container blog main">
         <p class="text">
-            More uncomfortably, the concepts each benchmark misses often look <em>central</em> to what that benchmark claims to evaluate. We ran Gemini over the list of missing concepts for each benchmark and kept ones that seemed in scope:
+            More uncomfortably, the concepts each benchmark misses often look <em>central</em> to what that benchmark claims to evaluate:
         </p>
 
         <div style="overflow-x: auto; margin: 1.5vh 0;">
@@ -299,8 +287,6 @@
                 <tr><th style="text-align:left; padding: 0.4em 0.8em;">Benchmark</th><th style="text-align:left; padding: 0.4em 0.8em;">ID</th><th style="text-align:left; padding: 0.4em 0.8em;">Missing concept the benchmark probably <em>should</em> test</th></tr>
             </thead>
             <tbody>
-                <tr><td style="padding: 0.4em 0.8em;"><em>AGI Eval</em></td><td style="padding: 0.4em 0.8em;"><tt>(699)</tt></td><td style="padding: 0.4em 0.8em;">Mentions of museums or libraries, or potentially things you might find in those places</td></tr>
-                <tr><td style="padding: 0.4em 0.8em;"><em>AGI Eval</em></td><td style="padding: 0.4em 0.8em;"><tt>(30886)</tt></td><td style="padding: 0.4em 0.8em;">Information about Arabic media sources</td></tr>
                 <tr><td style="padding: 0.4em 0.8em;"><em>LogicBench</em></td><td style="padding: 0.4em 0.8em;"><tt>(24511)</tt></td><td style="padding: 0.4em 0.8em;">Words related to math problems and solutions</td></tr>
                 <tr><td style="padding: 0.4em 0.8em;"><em>LogicBench</em></td><td style="padding: 0.4em 0.8em;"><tt>(8523)</tt></td><td style="padding: 0.4em 0.8em;">The word &ldquo;multiple&rdquo; or &ldquo;multiples&rdquo; appearing in mathematical contexts</td></tr>
                 <tr><td style="padding: 0.4em 0.8em;"><em>Social IQA</em></td><td style="padding: 0.4em 0.8em;"><tt>(8971)</tt></td><td style="padding: 0.4em 0.8em;">Code comments and code fragments</td></tr>
@@ -329,7 +315,7 @@
 
     <div class="container blog main">
         <p class="text">
-            When we rank concepts by $\chi_{\text{model}}^{(c)}$ and read the labels, a pattern jumps out &mdash; and it is exactly the kind of pattern you'd expect from a <em>reasoning-distilled</em> model. R1-Distill is strongest on the <em>surface forms</em> of mathematical reasoning and weakest on its <em>substance</em>. (Filtered to concepts that activate in at least 5 benchmarks with &ge;&nbsp;50 supporting datapoints.)
+            When we rank concepts by $\chi_{\text{model}}^{(c)}$ and read the labels, a pattern jumps out. R1-Distill, a reasoning-distilled model, is strongest on the <em>surface forms</em> of mathematical reasoning and weakest on its <em>substance</em>. (Filtered to concepts that activate in at least 5 benchmarks with &ge;&nbsp;50 supporting datapoints.)
         </p>
 
         <div style="overflow-x: auto; margin: 1.5vh 0;">
@@ -349,11 +335,11 @@
         </div>
 
         <p class="text">
-            <b>Read that split again.</b> The top of the ranking is the <em>scaffolding</em> of chain-of-thought &mdash; declaring variables, emitting LaTeX, transitioning between reasoning steps with words like <em>"Alternatively"</em>. The bottom is where that scaffolding has to cash out into a correct number: <em>boxed numerical answers</em>, <em>multi-digit numbers</em>, and concrete <em>code syntax</em>. Distillation taught the model the <em>shape</em> of careful reasoning far more reliably than the <em>arithmetic</em> it is supposed to carry out. It looks like it is reasoning; it just gets the number wrong.
+            <b>Read that split again.</b> The top of the ranking is the <em>scaffolding</em> of chain-of-thought: declaring variables, emitting LaTeX, transitioning between reasoning steps with words like <em>"Alternatively"</em>. The bottom is where that scaffolding has to cash out into a correct number: <em>boxed numerical answers</em>, <em>multi-digit numbers</em>, and concrete <em>code syntax</em>. Distillation taught the model the <em>shape</em> of careful reasoning far more reliably than the <em>arithmetic</em> it is supposed to carry out. It looks like it is reasoning; it just gets the number wrong.
         </p>
 
         <p class="text">
-            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items and inspect the concepts that fired on them. Below are two MATH problems where the single most strongly-firing concept is the very machinery of careful arithmetic &mdash; <tt>(31763)</tt> "intermediate values in arithmetic calculations performed step by step" &mdash; and yet R1-Distill still lands on the wrong number. It produces the <em>form</em> of a worked solution without the <em>substance</em>:
+            Because CG is grounded in SAE activations over real examples, we can pull up the actual benchmark items and inspect the concepts that fired on them. Below are two MATH problems where the single most strongly-firing concept is <tt>(31763)</tt> "intermediate values in arithmetic calculations performed step by step"&mdash;and yet, R1-Distill still lands on the wrong number. It produces the <em>form</em> of a worked solution without the <em>substance</em>:
         </p>
     </div>
 
@@ -364,7 +350,7 @@
 
     <div class="container blog main">
         <p class="text">
-            Finally, the "wide performance spread" we saw at the suite level isn't just an artifact of averaging across benchmarks &mdash; inside each individual benchmark, per-concept accuracy fans out just as widely:
+            Finally, the "wide performance spread" we saw at the suite level isn't just an artifact of averaging across benchmarks; inside each individual benchmark, per-concept accuracy fans out just as widely:
         </p>
     </div>
 
@@ -385,7 +371,7 @@
 
         <ul style="margin-left: 3em !important;">
             <li><p class="text"><b>Subsampling.</b> Re-running CG many times while dropping 20% of each benchmark leaves the per-concept scores essentially unchanged &mdash; the rankings are not driven by a handful of items.</p></li>
-            <li><p class="text"><b>Adversarial ablation.</b> Removing the small slice of data aligned with the top-performing concepts lowers median $\chi_{\text{model}}$, and removing the slice aligned with the worst-performing concepts raises it &mdash; the score moves in the direction CG predicts.</p></li>
+            <li><p class="text"><b>Adversarial ablation.</b> Removing the small slice of data aligned with the top-performing concepts lowers median $\chi_{\text{model}}$, and removing the slice aligned with the worst-performing concepts raises it; put together, the score moves in the direction CG predicts.</p></li>
             <li><p class="text"><b>Different SAE, same story.</b> Swapping in an SAE trained on a different model yields coverage/performance distributions of the same shape, with the top and bottom concepts lining up interpretively.</p></li>
         </ul>
 
