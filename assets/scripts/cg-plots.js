@@ -391,7 +391,7 @@
     annot.appendChild(metaTitle("Annotations"));
     annot.appendChild(pill("Bench:", it.benchmark_display, false));
     annot.appendChild(pill("Status:", it.status, true));
-    if (it.correct_answer) annot.appendChild(pill("Correct answer:", it.correct_answer, false));
+    if (it.correct_answer) annot.appendChild(pill("Target answer:", it.correct_answer, false));
     meta.appendChild(annot);
 
     const concepts = document.createElement("div");
