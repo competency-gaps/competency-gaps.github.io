@@ -77,6 +77,36 @@
                 flex-direction: column;
                 gap: 20px;
             }
+            /* ---- Mobile-only layout fixes (desktop is left untouched) ---- */
+            /* 1. Top interactive demo: the iframe's 5/4 frame is too short on a
+               phone, so the concept-detail card overflows and gets clipped.
+               Give the frame a taller fixed height on mobile so the full card
+               is always visible. */
+            .demo-frame {
+                aspect-ratio: auto !important;
+                height: 560px !important;
+            }
+            /* 2. Make every figure span the full content width (the single-plot
+               cards are capped at 62% on desktop, which leaves them tiny here). */
+            .figure-card {
+                max-width: 100% !important;
+                padding: 12px;
+            }
+            .container.blog p.caption {
+                max-width: 100% !important;
+            }
+            /* 3. Give the JS plots sensible mobile heights/ratios. */
+            #cg-overall-coverage,
+            #cg-overall-performance {
+                height: 300px !important;
+            }
+            #cg-missing-bar {
+                height: 360px !important;
+            }
+            /* The benchmark-overlap matrix renders as a near-full-width square. */
+            #cg-jaccard {
+                height: 86vw !important;
+            }
         }
     </style>
     <script src="assets/scripts/navbar.js"></script>
@@ -138,7 +168,7 @@
             </div>
 
             <div class="blog-cover" style="width: 100% !important; overflow: hidden; align-items: stretch;">
-                <div style="width: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6); aspect-ratio: 5 / 4;">
+                <div class="demo-frame" style="width: 100%; background: rgba(255, 255, 255, 0.9); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6); aspect-ratio: 5 / 4;">
                     <iframe src="concept_performance_map.html" title="Concept Performance Map (interactive demo)" loading="lazy" scrolling="no" style="border: none !important; outline: none !important; box-shadow: none !important; display: block; width: 100%; height: 100%;"></iframe>
                 </div>
             </div>

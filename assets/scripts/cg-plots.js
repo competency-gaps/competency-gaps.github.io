@@ -17,6 +17,18 @@
   const AXIS = "#444";
   const GRID = "#ececec";
 
+  // Mobile gets a few layout tweaks (desktop rendering is unchanged).
+  const isMobile = () =>
+    !!(global.matchMedia && global.matchMedia("(max-width: 768px)").matches);
+
+  // Short (<=4 char) acronyms so the benchmark-overlap matrix is legible on a
+  // phone, where the full names would eat the whole plot area.
+  const SHORT_LABELS = {
+    agi_eval_en: "AGIE", logicbench: "LGCB", gsm8k: "GSM8",
+    natural_questions: "NATQ", bbq: "BBQ", social_iqa: "SIQA",
+    winogrande: "WINO", math: "MATH", vectara: "VECT", crows_pairs: "CRWS",
+  };
+
   const BASE_CONFIG = {
     displayModeBar: false,
     responsive: true,
@@ -195,7 +207,14 @@
     setLoading(el);
     return getJSON(jsonUrl)
       .then((d) => {
-        const labels = d.display;
+        const mobile = isMobile();
+        // On a phone, swap the long benchmark names for 4-char acronyms so the
+        // square matrix can fill the width instead of collapsing to a tiny box.
+        const labels = mobile
+          ? (d.benchmarks || []).map(
+              (b, i) => SHORT_LABELS[b] || String(d.display[i] || b).slice(0, 4).toUpperCase()
+            )
+          : d.display;
         const z = d.matrix;
         const text = z.map((row) => row.map((v) => v.toFixed(2)));
         const trace = {
@@ -207,6 +226,7 @@
             [0.75, "#3d7fbf"], [1, "#1f4e79"],
           ],
           zmin: 0, zmax: 1,
+          showscale: !mobile, // drop the colorbar on mobile to give the grid room
           colorbar: {
             title: { text: "Jaccard", side: "right", font: { size: 12 } },
             thickness: 14, len: 1, lenmode: "fraction",
@@ -215,15 +235,26 @@
           },
           text: text,
           texttemplate: "%{text}",
-          textfont: { size: 10, family: FONT },
+          textfont: { size: mobile ? 11 : 10, family: FONT },
           hovertemplate: "<b>%{y}</b> ∩ <b>%{x}</b><br>Jaccard = %{z:.3f}<extra></extra>",
         };
         const layout = fontLayout({
-          margin: { l: 118, r: 10, t: 8, b: 104 },
-          xaxis: { tickangle: -40, color: AXIS, automargin: true, constrain: "domain" },
+          // Short acronyms on mobile need far less label gutter, so the cells
+          // grow to fill the (now full-width) square.
+          margin: mobile
+            ? { l: 44, r: 6, t: 6, b: 44 }
+            : { l: 118, r: 10, t: 8, b: 104 },
+          xaxis: {
+            tickangle: mobile ? 0 : -40, color: AXIS, automargin: true,
+            constrain: "domain", tickfont: { size: mobile ? 11 : 13 },
+          },
           // scaleanchor keeps the cells square regardless of the container width
           // so the matrix renders as a true square, not a stretched rectangle.
-          yaxis: { autorange: "reversed", color: AXIS, automargin: true, scaleanchor: "x", constrain: "domain" },
+          yaxis: {
+            autorange: "reversed", color: AXIS, automargin: true,
+            scaleanchor: "x", constrain: "domain",
+            tickfont: { size: mobile ? 11 : 13 },
+          },
         });
         el.innerHTML = "";
         return global.Plotly.newPlot(el, [trace], layout, BASE_CONFIG);
