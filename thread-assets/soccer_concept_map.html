@@ -36,12 +36,12 @@
   }
   body {
     min-height: auto;
-    padding: 30px 30px 34px;
+    padding: 14px 10px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 26px;
+    gap: 18px;
   }
 
   /* ---------- Top controls: mode toggle + evaluating pill ---------- */
@@ -54,16 +54,16 @@
   }
 
   .mode-toggle, .evaluating {
-    height: 50px;
+    height: 64px;
   }
-  .mode-toggle { width: 392px; }
+  .mode-toggle { width: 500px; }
 
   .mode-toggle {
     display: inline-flex;
     align-items: stretch;
     background: #f1f1f1;
     border-radius: 999px;
-    padding: 4px;
+    padding: 5px;
   }
   .mode-btn {
     display: inline-flex;
@@ -71,9 +71,9 @@
     justify-content: center;
     flex: 1 1 0;
     font-family: inherit;
-    font-size: 17px;
+    font-size: 23px;
     font-weight: 700;
-    padding: 0 18px;
+    padding: 0 22px;
     border: none;
     background: transparent;
     color: #6a6a6a;
@@ -93,9 +93,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 0 20px;
-    font-size: 17px;
+    gap: 12px;
+    padding: 0 26px;
+    font-size: 23px;
     color: #555;
     background: #f5f5f5;
     border-radius: 999px;
@@ -103,8 +103,8 @@
     overflow: hidden;
   }
   .evaluating-dot {
-    width: 9px;
-    height: 9px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #4ade80;
     flex-shrink: 0;
@@ -119,8 +119,8 @@
   /* ---------- Visualization area ---------- */
   .viz-container {
     position: relative;
-    width: 980px;
-    height: 532px;          /* matches the 700 x 380 viewBox aspect ratio */
+    width: 1180px;
+    height: 912px;          /* matches the tightened 463 x 358 viewBox aspect ratio */
     max-width: 100%;
     user-select: none;
   }
@@ -173,16 +173,16 @@
   .card {
     position: absolute;
     background: #ffffff;
-    border: 2px solid #111111;
-    border-radius: 15px;
-    padding: 16px;
-    width: 326px;
+    border: 2.5px solid #111111;
+    border-radius: 20px;
+    padding: 22px;
+    width: 452px;
     pointer-events: none;
     opacity: 0;
     transform: translateY(-4px);
     transition: opacity 0.18s ease, transform 0.18s ease;
     z-index: 10;
-    box-shadow: 0 8px 26px rgba(0,0,0,0.07);
+    box-shadow: 0 10px 32px rgba(0,0,0,0.08);
   }
   .card.visible {
     opacity: 1;
@@ -192,88 +192,88 @@
   .card .concept-name {
     font-family: inherit;
     font-weight: 700;
-    font-size: 21px;
-    line-height: 1.15;
+    font-size: 30px;
+    line-height: 1.12;
     text-align: center;
-    margin: 2px 0 13px;
-    letter-spacing: -0.2px;
+    margin: 3px 0 18px;
+    letter-spacing: -0.4px;
   }
   .card .overall {
-    border: 2px solid #111111;
-    border-radius: 11px;
-    padding: 14px 10px 13px;
+    border: 2.5px solid #111111;
+    border-radius: 15px;
+    padding: 19px 12px 17px;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 13px;
   }
   .card .overall .num {
-    font-size: 38px;
+    font-size: 56px;
     font-weight: 700;
     line-height: 1;
-    margin-bottom: 6px;
-    letter-spacing: -1px;
+    margin-bottom: 8px;
+    letter-spacing: -1.5px;
   }
   .card .overall .label {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 400;
     color: #333;
   }
   .card .benchmarks {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 9px;
+    gap: 12px;
   }
   .card .bm {
-    border: 2px solid #111111;
-    border-radius: 11px;
-    padding: 11px 7px 10px;
+    border: 2.5px solid #111111;
+    border-radius: 15px;
+    padding: 15px 9px 13px;
     text-align: center;
   }
   .card .bm .num {
-    font-size: 23px;
+    font-size: 33px;
     font-weight: 700;
     line-height: 1;
-    margin-bottom: 4px;
-    letter-spacing: -0.5px;
+    margin-bottom: 5px;
+    letter-spacing: -0.7px;
   }
-  .card .bm .label { font-size: 14px; color: #333; }
+  .card .bm .label { font-size: 19px; color: #333; }
 
   /* ---------- Legend ---------- */
   .legend {
     text-align: center;
     width: 100%;
-    max-width: 560px;
+    max-width: 1000px;
   }
   .legend h3 {
     font-weight: 700;
-    font-size: 19px;
-    margin: 0 0 12px 0;
-    letter-spacing: -0.2px;
+    font-size: 28px;
+    margin: 0 0 16px 0;
+    letter-spacing: -0.3px;
   }
   .legend .scale {
     background: #f1f1f1;
-    border-radius: 14px;
-    padding: 12px 16px 14px;
+    border-radius: 18px;
+    padding: 16px 22px 19px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    gap: 14px;
   }
   .legend .step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 7px;
+    gap: 9px;
   }
   .legend .chip {
     width: 100%;
-    height: 34px;
-    border-radius: 7px;
+    height: 52px;
+    border-radius: 9px;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
     transition: background 0.35s ease;
   }
-  .legend .lbl { font-size: 14px; color: #1a1a1a; }
+  .legend .lbl { font-size: 20px; color: #1a1a1a; }
 
-  @media (max-width: 1000px) {
-    .viz-container { width: 100%; height: auto; aspect-ratio: 700 / 380; }
+  @media (max-width: 1200px) {
+    .viz-container { width: 100%; height: auto; aspect-ratio: 463 / 358; }
   }
 </style>
 </head>
@@ -291,7 +291,7 @@
   </div>
 
   <div class="viz-container" id="vizContainer">
-    <svg class="viz-svg" viewBox="0 0 700 380" id="viz" preserveAspectRatio="xMidYMid meet">
+    <svg class="viz-svg" viewBox="118 12 463 358" id="viz" preserveAspectRatio="xMidYMid meet">
       <g id="clusters"></g>
       <g id="dots"></g>
       <g class="connector" id="connector">
@@ -346,11 +346,12 @@
     }
   };
 
-  const VIEWBOX = { w: 700, h: 380 };
+  // Tightened to frame the dot cloud so it fills the container edge-to-edge.
+  const VIEWBOX = { x: 118, y: 12, w: 463, h: 358 };
   const DOT_R = 18;
   const CLUSTER_PADDING = 28;
-  const CARD_CORNER_RADIUS = 15;
-  const CARD_WIDTH = 326;
+  const CARD_CORNER_RADIUS = 20;
+  const CARD_WIDTH = 452;
   // Must be >= the longest CSS transition on the fading elements (.connector, .card, .dot
   // are all ~180ms). Set slightly higher so the dot is definitely still in the front
   // layer while the connector finishes fading.
@@ -654,8 +655,8 @@
     const cardHeight = card.offsetHeight || 320;
     const gap = 38 * scale;
 
-    const dotScreenX = d.x * scale;
-    const dotScreenY = d.y * scale;
+    const dotScreenX = (d.x - VIEWBOX.x) * scale;
+    const dotScreenY = (d.y - VIEWBOX.y) * scale;
 
     let cardLeft, side;
     const roomRight = rect.width - (dotScreenX + gap);
@@ -680,10 +681,10 @@
     card.style.top  = cardTop  + 'px';
     card.classList.add('visible');
 
-    const cardLeft_vb   = cardLeft / scale;
-    const cardRight_vb  = (cardLeft + cardWidth) / scale;
-    const cardTop_vb    = cardTop / scale;
-    const cardBottom_vb = (cardTop + cardHeight) / scale;
+    const cardLeft_vb   = cardLeft / scale + VIEWBOX.x;
+    const cardRight_vb  = (cardLeft + cardWidth) / scale + VIEWBOX.x;
+    const cardTop_vb    = cardTop / scale + VIEWBOX.y;
+    const cardBottom_vb = (cardTop + cardHeight) / scale + VIEWBOX.y;
     const cornerR_vb    = CARD_CORNER_RADIUS / scale;
 
     const edgeX   = side === 'right' ? cardLeft_vb : cardRight_vb;

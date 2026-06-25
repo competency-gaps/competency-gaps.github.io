@@ -7,7 +7,7 @@ const PAGE = 'file://' + path.join(HERE, 'soccer_concept_map.html');
 const VIDEO_DIR = path.join(HERE, 'video');
 fs.mkdirSync(VIDEO_DIR, { recursive: true });
 
-const W = 1040;                       // 980 viz container + 30px body padding each side
+const W = 1200;                       // 1180 viz container + 10px body padding each side
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const browser = await chromium.launch({
