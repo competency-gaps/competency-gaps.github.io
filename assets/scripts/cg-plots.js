@@ -34,6 +34,10 @@
     responsive: true,
     scrollZoom: false,
     doubleClick: false,
+    // Drag/pinch-to-zoom is nice on desktop but on a touchscreen it hijacks
+    // page scrolling and accidentally zooms/crops the charts, so render the
+    // plots as static (non-interactive) images on mobile.
+    staticPlot: isMobile(),
   };
 
   function fontLayout(extra) {
