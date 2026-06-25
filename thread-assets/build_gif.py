@@ -12,9 +12,9 @@ FRAMES = sorted(glob.glob(os.path.join(HERE, "frames", "f_*.png")))
 OUT = os.path.join(HERE, "concept_map_soccer.gif")
 
 NATIVE_MS = 40           # 25 fps source -> 40 ms/frame
-TARGET_W = 760
+TARGET_W = 980
 PIXEL_DELTA = 24         # per-pixel intensity change counted as "different"
-MERGE_THRESHOLD = 110    # < this many changed pixels -> static hold (pulse-dot only)
+MERGE_THRESHOLD = 200    # < this many changed pixels -> static hold (pulse-dot only)
 PALETTE_COLORS = 200
 
 def changed_pixels(a, b):

@@ -7,14 +7,22 @@ touches the main website** — it only borrows the top interactive demo
 ## Files
 
 - **`concept_map_soccer.gif`** — the deliverable. A looping recording of the
-  concept map repurposed for the thread opener: an over-tested, well-performed
-  "soccer" concept cluster (greens) contrasted with an under-tested,
-  poorly-performed "refusing a request / holding boundaries" cluster (reds).
-  The animation opens `match results` (χ_model = 0.884) then
-  `refusing a request` (χ_model = 0.193), then loops.
+  concept map repurposed for the thread opener. It contrasts an over-tested,
+  well-performed "soccer" cluster with an under-tested, poorly-performed
+  "refusing a request / holding boundaries" cluster, in two passes:
+  1. **Benchmark Gaps** (coverage): opens `soccer-related scenarios`
+     (χ_bench = 0.912, dark = heavily tested) then `refusing a request`
+     (χ_bench = 0.087, near-white = barely tested).
+  2. **Model Gaps** (performance): switches modes, the dots recolour, then opens
+     the same two concepts — soccer green (χ_model = 0.884) vs refusing red
+     (χ_model = 0.193).
+  It resets to the Benchmark idle so the loop seam is clean.
 - **`soccer_concept_map.html`** — a standalone copy of the demo with the concept
-  set + scores swapped to tell the soccer-vs-boundaries story. Open it in a
-  browser to interact with it directly.
+  set + scores swapped to tell the soccer-vs-boundaries story. Loads Helvetica
+  Neue from `fonts/` and starts in Benchmark Gaps. The recording is driven via
+  the `window.viz` hooks it exposes. Open it in a browser to interact directly.
+- **`fonts/`** — Helvetica Neue (Regular/Medium/Bold), extracted from the
+  collection committed at the repo root on `main`.
 - **`capture.mjs`** — Playwright script that loads the HTML, drives the clicks,
   and records a webm.
 - **`build_gif.py`** — extracts frames from the webm and assembles the optimized,

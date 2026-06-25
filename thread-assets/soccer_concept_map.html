@@ -5,12 +5,25 @@
 <title>Concept Performance Map — Soccer vs. Boundaries</title>
 <!--
   Thread teaser variant of the site's top interactive demo (concept_performance_map.html).
-  This is a STANDALONE document used only to record a GIF for an X thread.
-  The main website is intentionally untouched. The only substantive change here is
-  the concept set + scores: an over-tested, well-performed "soccer" cluster contrasted
-  with an under-tested, poorly-performed "refusing a request / holding boundaries" cluster.
+  Standalone document used only to record a GIF for an X thread; the main website is
+  intentionally untouched. The concept set + scores contrast an over-tested, well-performed
+  "soccer" cluster with an under-tested, poorly-performed "refusing a request / holding
+  boundaries" cluster, shown first by coverage (Benchmark Gaps) then by performance (Model Gaps).
 -->
 <style>
+  @font-face {
+    font-family: 'Helvetica Neue'; font-style: normal; font-weight: 400;
+    src: url('fonts/HelveticaNeue-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Helvetica Neue'; font-style: normal; font-weight: 500;
+    src: url('fonts/HelveticaNeue-Medium.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Helvetica Neue'; font-style: normal; font-weight: 700;
+    src: url('fonts/HelveticaNeue-Bold.ttf') format('truetype');
+  }
+
   * { box-sizing: border-box; }
   html, body {
     margin: 0;
@@ -22,35 +35,35 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    min-height: 100vh;
-    padding: 14px 12px;
+    min-height: auto;
+    padding: 30px 30px 34px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 18px;
+    gap: 26px;
   }
 
   /* ---------- Top controls: mode toggle + evaluating pill ---------- */
   .top-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
     justify-content: center;
   }
 
   .mode-toggle, .evaluating {
-    height: 38px;
-    width: 308px;
+    height: 50px;
   }
+  .mode-toggle { width: 392px; }
 
   .mode-toggle {
     display: inline-flex;
     align-items: stretch;
     background: #f1f1f1;
     border-radius: 999px;
-    padding: 3px;
+    padding: 4px;
   }
   .mode-btn {
     display: inline-flex;
@@ -58,9 +71,9 @@
     justify-content: center;
     flex: 1 1 0;
     font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0 14px;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 0 18px;
     border: none;
     background: transparent;
     color: #6a6a6a;
@@ -69,26 +82,20 @@
     transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     letter-spacing: 0.05px;
   }
-  .mode-btn:hover:not(.active) {
-    color: #222;
-  }
+  .mode-btn:hover:not(.active) { color: #222; }
   .mode-btn.active {
     background: #ffffff;
     color: #111;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03);
-  }
-  .mode-btn:focus-visible {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
   }
 
   .evaluating {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 0 14px;
-    font-size: 13px;
+    gap: 10px;
+    padding: 0 20px;
+    font-size: 17px;
     color: #555;
     background: #f5f5f5;
     border-radius: 999px;
@@ -96,8 +103,8 @@
     overflow: hidden;
   }
   .evaluating-dot {
-    width: 7px;
-    height: 7px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: #4ade80;
     flex-shrink: 0;
@@ -107,16 +114,13 @@
     0%, 100% { opacity: 1; transform: scale(1); }
     50%      { opacity: 0.45; transform: scale(0.82); }
   }
-  #evaluatingValue {
-    font-weight: 600;
-    color: #111;
-  }
+  #evaluatingValue { font-weight: 700; color: #111; }
 
   /* ---------- Visualization area ---------- */
   .viz-container {
     position: relative;
-    width: 790px;
-    height: 430px;
+    width: 980px;
+    height: 532px;          /* matches the 700 x 380 viewBox aspect ratio */
     max-width: 100%;
     user-select: none;
   }
@@ -146,8 +150,8 @@
     filter: drop-shadow(0 7px 12px rgba(0,0,0,0.24));
   }
   .dot.selected {
-    transform: scale(1.18);
-    filter: drop-shadow(0 7px 12px rgba(0,0,0,0.28));
+    transform: scale(1.22);
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,0.30));
   }
 
   /* ---------- Connector ribbon ---------- */
@@ -157,10 +161,7 @@
     pointer-events: none;
   }
   .connector.visible { opacity: 1; }
-  #connectorFill {
-    fill: #ffffff;
-    stroke: none;
-  }
+  #connectorFill { fill: #ffffff; stroke: none; }
   #connectorStroke {
     fill: none;
     stroke: #959595;
@@ -172,16 +173,16 @@
   .card {
     position: absolute;
     background: #ffffff;
-    border: 1.8px solid #111111;
-    border-radius: 12px;
-    padding: 12px;
-    width: 260px;
+    border: 2px solid #111111;
+    border-radius: 15px;
+    padding: 16px;
+    width: 326px;
     pointer-events: none;
     opacity: 0;
     transform: translateY(-4px);
     transition: opacity 0.18s ease, transform 0.18s ease;
     z-index: 10;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.07);
   }
   .card.visible {
     opacity: 1;
@@ -189,102 +190,90 @@
     pointer-events: auto;
   }
   .card .concept-name {
-    font-family: 'Menlo', 'Courier New', Courier, monospace;
+    font-family: inherit;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 21px;
+    line-height: 1.15;
     text-align: center;
-    margin: 2px 0 9px;
-    letter-spacing: 0.2px;
+    margin: 2px 0 13px;
+    letter-spacing: -0.2px;
   }
   .card .overall {
-    border: 1.6px solid #111111;
-    border-radius: 9px;
-    padding: 10px 8px 9px;
+    border: 2px solid #111111;
+    border-radius: 11px;
+    padding: 14px 10px 13px;
     text-align: center;
-    margin-bottom: 7px;
+    margin-bottom: 10px;
   }
   .card .overall .num {
-    font-size: 24px;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -1px;
+  }
+  .card .overall .label {
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+  }
+  .card .benchmarks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+  .card .bm {
+    border: 2px solid #111111;
+    border-radius: 11px;
+    padding: 11px 7px 10px;
+    text-align: center;
+  }
+  .card .bm .num {
+    font-size: 23px;
     font-weight: 700;
     line-height: 1;
     margin-bottom: 4px;
     letter-spacing: -0.5px;
   }
-  .card .overall .label {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .card .benchmarks {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-  }
-  .card .bm {
-    border: 1.6px solid #111111;
-    border-radius: 9px;
-    padding: 8px 6px 7px;
-    text-align: center;
-  }
-  .card .bm .num {
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 3px;
-    letter-spacing: -0.3px;
-  }
-  .card .bm .label {
-    font-size: 11px;
-  }
+  .card .bm .label { font-size: 14px; color: #333; }
 
-  /* ---------- Hint ---------- */
-  .hint {
-    font-size: 13px;
-    color: #111111;
-    margin: 0;
-    letter-spacing: 0.1px;
-    text-align: center;
-  }
-
-  /* ---------- Legend (compact) ---------- */
+  /* ---------- Legend ---------- */
   .legend {
     text-align: center;
     width: 100%;
-    max-width: 440px;
+    max-width: 560px;
   }
   .legend h3 {
     font-weight: 700;
-    font-size: 14px;
-    margin: 0 0 9px 0;
-    letter-spacing: -0.1px;
+    font-size: 19px;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.2px;
   }
   .legend .scale {
     background: #f1f1f1;
-    border-radius: 12px;
-    padding: 9px 12px 11px;
+    border-radius: 14px;
+    padding: 12px 16px 14px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 7px;
+    gap: 10px;
   }
   .legend .step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
   }
   .legend .chip {
     width: 100%;
-    height: 25px;
-    border-radius: 5px;
+    height: 34px;
+    border-radius: 7px;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
     transition: background 0.35s ease;
   }
-  .legend .lbl {
-    font-size: 11px;
-    color: #1a1a1a;
-  }
+  .legend .lbl { font-size: 14px; color: #1a1a1a; }
 
-  @media (max-width: 720px) {
-    .viz-container { width: 100%; height: auto; aspect-ratio: 790 / 430; }
+  @media (max-width: 1000px) {
+    .viz-container { width: 100%; height: auto; aspect-ratio: 700 / 380; }
   }
 </style>
 </head>
@@ -292,12 +281,12 @@
 
   <div class="top-controls">
     <div class="mode-toggle" role="group" aria-label="Gap analysis mode">
-      <button class="mode-btn active" data-mode="model"     aria-pressed="true">Model Gaps</button>
-      <button class="mode-btn"        data-mode="benchmark" aria-pressed="false">Benchmark Gaps</button>
+      <button class="mode-btn"        data-mode="model"     aria-pressed="false">Model Gaps</button>
+      <button class="mode-btn active"  data-mode="benchmark" aria-pressed="true">Benchmark Gaps</button>
     </div>
     <div class="evaluating" role="status" aria-live="polite">
       <span class="evaluating-dot" aria-hidden="true"></span>
-      <span>Evaluating: <span id="evaluatingValue">DeepSeek-R1-Distill-Llama-8B</span></span>
+      <span>Evaluating: <span id="evaluatingValue">15+ benchmark suite</span></span>
     </div>
   </div>
 
@@ -315,13 +304,11 @@
       <div class="concept-name" id="conceptName"></div>
       <div class="overall">
         <div class="num" id="overallScore"></div>
-        <div class="label" id="overallLabel"><i>&chi;</i><sub>model</sub></div>
+        <div class="label" id="overallLabel"><i>&chi;</i><sub>bench</sub></div>
       </div>
       <div class="benchmarks" id="benchmarks"></div>
     </div>
   </div>
-
-  <p class="hint">Each dot represents an SAE concept.<br>Click a concept to inspect its breakdown.</p>
 
   <div class="legend">
     <h3 id="legendTitle">Model Performance</h3>
@@ -362,17 +349,18 @@
   const VIEWBOX = { w: 700, h: 380 };
   const DOT_R = 18;
   const CLUSTER_PADDING = 28;
-  const CARD_CORNER_RADIUS = 12;
+  const CARD_CORNER_RADIUS = 15;
+  const CARD_WIDTH = 326;
   // Must be >= the longest CSS transition on the fading elements (.connector, .card, .dot
   // are all ~180ms). Set slightly higher so the dot is definitely still in the front
   // layer while the connector finishes fading.
   const DESELECT_RETURN_DELAY_MS = 220;
 
-  let currentMode = 'model';
+  let currentMode = 'benchmark';   // standalone recording starts on Benchmark Gaps
 
   // ==================== Dot data ====================
-  // Soccer concepts (ids 1-7): heavily tested, model does well  -> greens.
-  // Boundary / refusal concepts (ids 8-11): barely tested, model does worst -> reds.
+  // Soccer concepts (ids 1-7): heavily tested, model does well  -> greens / dark coverage.
+  // Boundary / refusal concepts (ids 8-11): barely tested, model does worst -> reds / light coverage.
   const dots = [
     { id: 1, x: 173, y: 145, concept: 'soccer commentary',
       modelGaps: {
@@ -383,7 +371,7 @@
         perf: 'very high', overall: 0.891,
         bench: { 'MMLU': 0.901, 'TriviaQA': 0.948, 'HellaSwag': 0.912, 'ARC': 0.874, 'BBQ': 0.863, 'TruthfulQA': 0.842, 'XSum': 0.851, 'SQuAD': 0.889 }
       }},
-    { id: 2, x: 258, y: 90, concept: 'match results',
+    { id: 2, x: 258, y: 90, concept: 'soccer-related scenarios',
       modelGaps: {
         perf: 'very good', overall: 0.884,
         bench: { 'MMLU': 0.901, 'TriviaQA': 0.951, 'HellaSwag': 0.918, 'BBQ': 0.863, 'TruthfulQA': 0.842, 'XSTest': 0.821 }
@@ -617,9 +605,6 @@
     if (el) dotsG.appendChild(el);
   }
 
-  // Cancel any in-flight deselect return. If there's a dot still waiting to
-  // be moved back, handle it now: leave it in the front layer if it's the
-  // new target (the re-select case), otherwise move it back immediately.
   function flushPendingReturn(incomingId) {
     if (deselectTimeout !== null) {
       clearTimeout(deselectTimeout);
@@ -665,8 +650,8 @@
     const rect  = container.getBoundingClientRect();
     const scale = rect.width / VIEWBOX.w;
 
-    const cardWidth  = 260;
-    const cardHeight = card.offsetHeight || 280;
+    const cardWidth  = CARD_WIDTH;
+    const cardHeight = card.offsetHeight || 320;
     const gap = 38 * scale;
 
     const dotScreenX = d.x * scale;
@@ -688,7 +673,7 @@
         : Math.max(4, dotScreenX - gap - cardWidth);
     }
 
-    let cardTop = dotScreenY - 36;
+    let cardTop = dotScreenY - 44;
     cardTop = Math.max(6, Math.min(rect.height - cardHeight - 6, cardTop));
 
     card.style.left = cardLeft + 'px';
@@ -738,9 +723,6 @@
     connector.classList.remove('visible');
     document.querySelectorAll('.dot').forEach(el => el.classList.remove('selected'));
 
-    // The dot stays in the front layer while everything fades out, so the
-    // connector ribbon never paints over the shrinking dot. Only after the
-    // transitions settle do we move the dot back to the main layer.
     if (deselectTimeout !== null) clearTimeout(deselectTimeout);
     pendingReturnId = prevId;
     deselectTimeout = setTimeout(() => {
@@ -808,8 +790,6 @@
     const valueEl  = document.getElementById('evaluatingValue');
     const original = valueEl.textContent;
 
-    // Let the pill size to its content while measuring (the CSS sets a fixed
-    // width, which would otherwise clip longer model names).
     pill.style.width = 'auto';
     let maxWidth = 0;
     for (const info of Object.values(MODE_INFO)) {
@@ -836,6 +816,15 @@
       positionCard(d);
     }
   });
+
+  // ==================== Programmatic hooks for recording ====================
+  // Exposed so the capture script can drive an exact, repeatable sequence.
+  window.viz = {
+    select: selectDot,
+    deselect: deselect,
+    setMode: switchMode,
+    getMode: () => currentMode
+  };
 
   // ==================== Initial render ====================
   renderLegend();
