@@ -8,7 +8,6 @@ const VIDEO_DIR = path.join(HERE, 'video');
 fs.mkdirSync(VIDEO_DIR, { recursive: true });
 
 const PAD = 10;                       // body horizontal padding (px each side)
-const VB = 463 / 358;                 // tightened viewBox aspect ratio (w/h)
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const browser = await chromium.launch({
@@ -25,23 +24,19 @@ await ppage.goto(PAGE, { waitUntil: 'networkidle' });
 await ppage.waitForSelector('.dot');
 await ppage.evaluate(() => document.fonts.ready);
 
-const layout = await ppage.evaluate((vb) => {
+// The container size is now baked into the page CSS, so we only MEASURE here —
+// no DOM mutation. Resizing the container after load was what caused the
+// one-off "shrink then grow" blip at the loop seam.
+const contentW = await ppage.evaluate(() => {
   const w = el => Math.ceil(el.getBoundingClientRect().width);
-  const top = w(document.querySelector('.top-controls'));
-  const base = w(document.querySelector('.viz-container'));
-  const containerW = Math.max(base, top);
-  const containerH = Math.round(containerW / vb);
-  document.querySelector('.viz-container').style.width = containerW + 'px';
-  document.querySelector('.viz-container').style.height = containerH + 'px';
-  document.querySelector('.legend').style.maxWidth = containerW + 'px';
-  return { containerW, containerH };
-}, VB);
-
-const W = layout.containerW + PAD * 2;
+  return Math.max(w(document.querySelector('.viz-container')),
+                  w(document.querySelector('.top-controls')));
+});
+const W = contentW + PAD * 2;
 const H = await ppage.evaluate(() => Math.ceil(document.body.getBoundingClientRect().height));
 await probe.close();
 
-// ---- pass 2: record at the measured size ----
+// ---- pass 2: record at the measured size (layout is static throughout) ----
 const context = await browser.newContext({
   viewport: { width: W, height: H },
   deviceScaleFactor: 1,
@@ -51,11 +46,6 @@ const page = await context.newPage();
 await page.goto(PAGE, { waitUntil: 'networkidle' });
 await page.waitForSelector('.dot');
 await page.evaluate(() => document.fonts.ready);
-await page.evaluate(({ cw, ch }) => {
-  document.querySelector('.viz-container').style.width = cw + 'px';
-  document.querySelector('.viz-container').style.height = ch + 'px';
-  document.querySelector('.legend').style.maxWidth = cw + 'px';
-}, { cw: layout.containerW, ch: layout.containerH });
 await page.mouse.move(W - 6, H - 6);
 
 const SOCCER = 2;      // "soccer-related scenarios"
@@ -92,4 +82,4 @@ const dest = path.join(HERE, 'capture.webm');
 fs.copyFileSync(src, dest);
 await browser.close();
 
-console.log('SIZE', W + 'x' + H, 'container', layout.containerW + 'x' + layout.containerH, 'VIDEO', dest);
+console.log('SIZE', W + 'x' + H, 'VIDEO', dest);
