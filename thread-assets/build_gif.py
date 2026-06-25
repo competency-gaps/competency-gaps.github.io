@@ -28,13 +28,23 @@ def changed_pixels(a, b):
     return hist[255]
 
 # ---- load + downscale ----
+def snap_white(im, thr=248):
+    # The lossy video codec and palette step tint the pure-white background
+    # (#fff) to a faint off-white. Snap any pixel whose channels are all >= thr
+    # back to true white. The intentional light-gray chrome (toggle/pill #f5f5f5,
+    # legend box #f1f1f1) sits below thr and is left untouched.
+    r, g, b = im.split()
+    mn = ImageChops.darker(ImageChops.darker(r, g), b)
+    mask = mn.point(lambda v: 255 if v >= thr else 0).convert("1")
+    return Image.composite(Image.new("RGB", im.size, (255, 255, 255)), im, mask)
+
 imgs = []
 for p in FRAMES:
     im = Image.open(p).convert("RGB")
     if im.width != TARGET_W:
         h = round(im.height * TARGET_W / im.width)
         im = im.resize((TARGET_W, h), Image.LANCZOS)
-    imgs.append(im)
+    imgs.append(snap_white(im))
 
 # ---- drop leading near-white (page still loading) frames ----
 def near_white(im):
