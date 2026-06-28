@@ -36,12 +36,12 @@
   }
   body {
     min-height: auto;
-    padding: 14px 10px 20px;
+    padding: 12px 10px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 18px;
+    gap: 10px;
   }
 
   /* ---------- Top controls: mode toggle + evaluating pill ---------- */
@@ -120,7 +120,7 @@
   .viz-container {
     position: relative;
     width: 1354px;
-    height: 1047px;         /* matches the tightened 463 x 358 viewBox aspect ratio */
+    height: 936px;          /* matches the tightened 463 x 320 viewBox aspect ratio */
     max-width: 100%;
     user-select: none;
   }
@@ -273,7 +273,7 @@
   .legend .lbl { font-size: 27px; color: #1a1a1a; }
 
   @media (max-width: 900px) {
-    .viz-container { width: 100%; height: auto; aspect-ratio: 463 / 358; }
+    .viz-container { width: 100%; height: auto; aspect-ratio: 463 / 320; }
   }
 </style>
 </head>
@@ -291,7 +291,7 @@
   </div>
 
   <div class="viz-container" id="vizContainer">
-    <svg class="viz-svg" viewBox="118 12 463 358" id="viz" preserveAspectRatio="xMidYMid meet">
+    <svg class="viz-svg" viewBox="118 30 463 320" id="viz" preserveAspectRatio="xMidYMid meet">
       <g id="clusters"></g>
       <g id="dots"></g>
       <g class="connector" id="connector">
@@ -347,7 +347,7 @@
   };
 
   // Tightened to frame the dot cloud so it fills the container edge-to-edge.
-  const VIEWBOX = { x: 118, y: 12, w: 463, h: 358 };
+  const VIEWBOX = { x: 118, y: 30, w: 463, h: 320 };
   const DOT_R = 18;
   const CLUSTER_PADDING = 28;
   const CARD_CORNER_RADIUS = 20;

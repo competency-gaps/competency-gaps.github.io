@@ -46,12 +46,12 @@ for p in FRAMES:
         im = im.resize((TARGET_W, h), Image.LANCZOS)
     imgs.append(snap_white(im))
 
-# ---- drop leading near-white (page still loading) frames ----
-def near_white(im):
-    g = im.convert("L")
-    return (sum(i*c for i, c in enumerate(g.histogram())) / (im.width*im.height)) > 251
+# ---- drop leading page-load frames: keep from the first frame that already
+# matches the final resting state (clean Benchmark idle). More robust than a
+# brightness test, which lets partially-painted load frames slip through. ----
+ref = imgs[-1]
 start = 0
-while start < len(imgs) and near_white(imgs[start]):
+while start < len(imgs) - 1 and start < 60 and changed_pixels(imgs[start], ref) > 3000:
     start += 1
 imgs = imgs[start:]
 
