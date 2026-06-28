@@ -120,7 +120,7 @@
   .viz-container {
     position: relative;
     width: 1354px;
-    height: 936px;          /* matches the tightened 463 x 320 viewBox aspect ratio */
+    height: 643px;          /* matches the tightened 463 x 220 viewBox aspect ratio */
     max-width: 100%;
     user-select: none;
   }
@@ -273,7 +273,7 @@
   .legend .lbl { font-size: 27px; color: #1a1a1a; }
 
   @media (max-width: 900px) {
-    .viz-container { width: 100%; height: auto; aspect-ratio: 463 / 320; }
+    .viz-container { width: 100%; height: auto; aspect-ratio: 463 / 220; }
   }
 </style>
 </head>
@@ -291,7 +291,7 @@
   </div>
 
   <div class="viz-container" id="vizContainer">
-    <svg class="viz-svg" viewBox="118 30 463 320" id="viz" preserveAspectRatio="xMidYMid meet">
+    <svg class="viz-svg" viewBox="118 80 463 220" id="viz" preserveAspectRatio="xMidYMid meet">
       <g id="clusters"></g>
       <g id="dots"></g>
       <g class="connector" id="connector">
@@ -347,7 +347,7 @@
   };
 
   // Tightened to frame the dot cloud so it fills the container edge-to-edge.
-  const VIEWBOX = { x: 118, y: 30, w: 463, h: 320 };
+  const VIEWBOX = { x: 118, y: 80, w: 463, h: 220 };
   const DOT_R = 18;
   const CLUSTER_PADDING = 28;
   const CARD_CORNER_RADIUS = 20;
@@ -463,6 +463,12 @@
         bench: { 'MMLU': 0.142, 'TriviaQA': 0.094, 'HellaSwag': 0.161, 'ARC': 0.103, 'BBQ': 0.126, 'TruthfulQA': 0.134, 'XSum': 0.097, 'SQuAD': 0.111 }
       }}
   ];
+
+  // Vertically compress the concept layout so the map block is shorter, without
+  // shrinking the dots (they stay circular) or touching the text/legend. Squashes
+  // every dot's y toward the cloud's vertical centre; cluster outlines follow.
+  const Y_CENTER = 188.5, Y_SQUASH = 0.62;
+  dots.forEach(d => { d.y = Y_CENTER + (d.y - Y_CENTER) * Y_SQUASH; });
 
   const clusters = [
     [1, 2, 3],
