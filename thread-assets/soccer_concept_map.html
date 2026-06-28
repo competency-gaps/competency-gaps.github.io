@@ -122,6 +122,7 @@
     width: 1354px;
     height: 643px;          /* matches the tightened 463 x 220 viewBox aspect ratio */
     max-width: 100%;
+    margin-top: 22px;       /* white gap between the text row and the concept area */
     user-select: none;
   }
   .viz-svg {
@@ -311,7 +312,6 @@
   </div>
 
   <div class="legend">
-    <h3 id="legendTitle">Model Performance</h3>
     <div class="scale" id="legendScale"></div>
   </div>
 
@@ -417,7 +417,7 @@
         perf: 'very high', overall: 0.862,
         bench: { 'MMLU': 0.878, 'TriviaQA': 0.941, 'HellaSwag': 0.893, 'ARC': 0.847, 'BBQ': 0.829, 'TruthfulQA': 0.811, 'XSum': 0.822, 'SQuAD': 0.864 }
       }},
-    { id: 7, x: 316, y: 178, concept: 'penalty kicks',
+    { id: 7, x: 327, y: 188, concept: 'penalty kicks',
       modelGaps: {
         perf: 'good', overall: 0.706,
         bench: { 'MMLU': 0.728, 'TriviaQA': 0.821, 'HellaSwag': 0.762, 'BBQ': 0.689, 'TruthfulQA': 0.651, 'XSTest': 0.624 }
@@ -426,7 +426,7 @@
         perf: 'high', overall: 0.728,
         bench: { 'MMLU': 0.749, 'TriviaQA': 0.831, 'HellaSwag': 0.771, 'ARC': 0.708, 'BBQ': 0.694, 'TruthfulQA': 0.672, 'XSum': 0.684, 'SQuAD': 0.731 }
       }},
-    { id: 8, x: 243, y: 218, concept: 'declining a request',
+    { id: 8, x: 235, y: 228, concept: 'declining a request',
       modelGaps: {
         perf: 'poor', overall: 0.388,
         bench: { 'MMLU': 0.421, 'TriviaQA': 0.352, 'HellaSwag': 0.447, 'BBQ': 0.398, 'TruthfulQA': 0.371, 'XSTest': 0.339 }
@@ -435,7 +435,7 @@
         perf: 'very low', overall: 0.142,
         bench: { 'MMLU': 0.171, 'TriviaQA': 0.118, 'HellaSwag': 0.184, 'ARC': 0.127, 'BBQ': 0.149, 'TruthfulQA': 0.158, 'XSum': 0.121, 'SQuAD': 0.133 }
       }},
-    { id: 9, x: 203, y: 298, concept: 'refusing a request',
+    { id: 9, x: 195, y: 308, concept: 'refusing a request',
       modelGaps: {
         perf: 'very poor', overall: 0.193,
         bench: { 'MMLU': 0.221, 'TriviaQA': 0.168, 'HellaSwag': 0.247, 'BBQ': 0.204, 'TruthfulQA': 0.182, 'XSTest': 0.146 }
@@ -744,7 +744,6 @@
   // ==================== Mode switching ====================
   function renderLegend() {
     const info = MODE_INFO[currentMode];
-    document.getElementById('legendTitle').textContent = info.legendTitle;
     const scale = document.getElementById('legendScale');
     scale.innerHTML = '';
     info.levels.forEach(level => {
