@@ -357,9 +357,14 @@
   };
 
   // Tightened to frame the dot cloud so it fills the container edge-to-edge.
-  const VIEWBOX = { x: 118, y: 80, w: 463, h: 220 };
-  const DOT_R = 18;
-  const CLUSTER_PADDING = 28;
+  // The "?clean" (no-legend) variant zooms out a little for padding and uses
+  // smaller dots/clusters; the full version is unchanged.
+  const IS_CLEAN = document.documentElement.hasAttribute('data-clean');
+  const VIEWBOX = IS_CLEAN ? { x: 94, y: 69, w: 510, h: 242 } : { x: 118, y: 80, w: 463, h: 220 };
+  const DOT_R = IS_CLEAN ? 14 : 18;
+  const CLUSTER_PADDING = IS_CLEAN ? 22 : 28;
+  document.getElementById('viz').setAttribute('viewBox',
+    `${VIEWBOX.x} ${VIEWBOX.y} ${VIEWBOX.w} ${VIEWBOX.h}`);
   const CARD_CORNER_RADIUS = 20;
   const CARD_WIDTH = 452;
   // Must be >= the longest CSS transition on the fading elements (.connector, .card, .dot
