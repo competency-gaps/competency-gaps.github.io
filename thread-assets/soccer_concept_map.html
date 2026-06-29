@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Concept Performance Map — Soccer vs. Boundaries</title>
+<script>
+  // "?clean" hides the top toggle/model row and the bottom legend (for the
+  // concept-area-only recording). Set before the body renders, so no flash.
+  if (new URLSearchParams(location.search).has('clean')) {
+    document.documentElement.setAttribute('data-clean', '');
+  }
+</script>
 <!--
   Thread teaser variant of the site's top interactive demo (concept_performance_map.html).
   Standalone document used only to record a GIF for an X thread; the main website is
@@ -23,6 +30,9 @@
     font-family: 'Helvetica Neue'; font-style: normal; font-weight: 700;
     src: url('fonts/HelveticaNeue-Bold.ttf') format('truetype');
   }
+
+  html[data-clean] .top-controls,
+  html[data-clean] .legend { display: none !important; }
 
   * { box-sizing: border-box; }
   html, body {

@@ -4,18 +4,20 @@
 Smooth fades are preserved; long static holds are collapsed into single frames
 with a longer display duration so the file stays small.
 """
-import os, glob
+import os, glob, sys
 from PIL import Image, ImageChops
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FRAMES = sorted(glob.glob(os.path.join(HERE, "frames", "f_*.png")))
-OUT = os.path.join(HERE, "concept_map_soccer.gif")
+# Optional CLI overrides: build_gif.py [framesDir] [outPath] [targetW] [paletteColors]
+FRAMES_DIR = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "frames")
+FRAMES = sorted(glob.glob(os.path.join(FRAMES_DIR, "f_*.png")))
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "concept_map_soccer.gif")
 
 NATIVE_MS = 40           # 25 fps source -> 40 ms/frame
-TARGET_W = 1100
+TARGET_W = int(sys.argv[3]) if len(sys.argv) > 3 else 1100
 PIXEL_DELTA = 24         # per-pixel intensity change counted as "different"
 MERGE_THRESHOLD = 430    # < this many changed pixels -> static hold (pulse-dot only)
-PALETTE_COLORS = 200
+PALETTE_COLORS = int(sys.argv[4]) if len(sys.argv) > 4 else 200
 
 def changed_pixels(a, b):
     # The detail card is mostly white-on-white, so a mean diff is dominated by
@@ -38,9 +40,14 @@ def snap_white(im, thr=248):
     mask = mn.point(lambda v: 255 if v >= thr else 0).convert("1")
     return Image.composite(Image.new("RGB", im.size, (255, 255, 255)), im, mask)
 
+CROP = int(sys.argv[5]) if len(sys.argv) > 5 else 0   # px to trim from each edge
 imgs = []
 for p in FRAMES:
     im = Image.open(p).convert("RGB")
+    if CROP:
+        # The video recorder can leave a 1-2px gray seam at the frame edge;
+        # trim a few px off every side (the margins are white anyway).
+        im = im.crop((CROP, CROP, im.width - CROP, im.height - CROP))
     if im.width != TARGET_W:
         h = round(im.height * TARGET_W / im.width)
         im = im.resize((TARGET_W, h), Image.LANCZOS)
