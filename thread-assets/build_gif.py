@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""Assemble extracted PNG frames into an optimized, looping GIF.
+
+Smooth fades are preserved; long static holds are collapsed into single frames
+with a longer display duration so the file stays small.
+"""
+import os, glob, sys
+from PIL import Image, ImageChops
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+# Optional CLI overrides: build_gif.py [framesDir] [outPath] [targetW] [paletteColors]
+FRAMES_DIR = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "frames")
+FRAMES = sorted(glob.glob(os.path.join(FRAMES_DIR, "f_*.png")))
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "concept_map_soccer.gif")
+
+NATIVE_MS = 40           # 25 fps source -> 40 ms/frame
+TARGET_W = int(sys.argv[3]) if len(sys.argv) > 3 else 1100
+PIXEL_DELTA = 24         # per-pixel intensity change counted as "different"
+MERGE_THRESHOLD = 430    # < this many changed pixels -> static hold (pulse-dot only)
+PALETTE_COLORS = int(sys.argv[4]) if len(sys.argv) > 4 else 200
+
+def changed_pixels(a, b):
+    # The detail card is mostly white-on-white, so a mean diff is dominated by
+    # the unchanged background. Counting pixels that actually moved separates
+    # true holds (only the ~7px pulsing status dot changes) from card fades
+    # (hundreds of text/border pixels change).
+    diff = ImageChops.difference(a.convert("L"), b.convert("L"))
+    mask = diff.point(lambda v: 255 if v > PIXEL_DELTA else 0)
+    hist = mask.histogram()
+    return hist[255]
+
+# ---- load + downscale ----
+def snap_white(im, thr=248):
+    # The lossy video codec and palette step tint the pure-white background
+    # (#fff) to a faint off-white. Snap any pixel whose channels are all >= thr
+    # back to true white. The intentional light-gray chrome (toggle/pill #f5f5f5,
+    # legend box #f1f1f1) sits below thr and is left untouched.
+    r, g, b = im.split()
+    mn = ImageChops.darker(ImageChops.darker(r, g), b)
+    mask = mn.point(lambda v: 255 if v >= thr else 0).convert("1")
+    return Image.composite(Image.new("RGB", im.size, (255, 255, 255)), im, mask)
+
+CROP = int(sys.argv[5]) if len(sys.argv) > 5 else 0   # px to trim from each edge
+imgs = []
+for p in FRAMES:
+    im = Image.open(p).convert("RGB")
+    if CROP:
+        # The video recorder can leave a 1-2px gray seam at the frame edge;
+        # trim a few px off every side (the margins are white anyway).
+        im = im.crop((CROP, CROP, im.width - CROP, im.height - CROP))
+    if im.width != TARGET_W:
+        h = round(im.height * TARGET_W / im.width)
+        im = im.resize((TARGET_W, h), Image.LANCZOS)
+    imgs.append(snap_white(im))
+
+# ---- drop leading page-load frames: keep from the first frame that already
+# matches the final resting state (clean Benchmark idle). More robust than a
+# brightness test, which lets partially-painted load frames slip through. ----
+ref = imgs[-1]
+start = 0
+while start < len(imgs) - 1 and start < 60 and changed_pixels(imgs[start], ref) > 3000:
+    start += 1
+imgs = imgs[start:]
+
+# ---- merge frames that stay near-identical to the run's ANCHOR, accumulating
+# duration. Comparing to the anchor (not the immediate predecessor) keeps slow
+# fades smooth: during a fade each frame drifts from the anchor and breaks the
+# run, while a true static hold collapses into a single long-duration frame. ----
+merged = []            # list of (image, duration_ms)
+anchor = imgs[0]
+dur = NATIVE_MS
+for cur in imgs[1:]:
+    if changed_pixels(anchor, cur) < MERGE_THRESHOLD:
+        dur += NATIVE_MS
+    else:
+        merged.append((anchor, dur))
+        anchor = cur
+        dur = NATIVE_MS
+merged.append((anchor, dur))
+
+print(f"{len(imgs)} frames -> {len(merged)} after merge")
+
+# ---- shared palette so colors don't flicker between frames ----
+# Build it from a few representative frames (idle + each card peak).
+sample = Image.new("RGB", (TARGET_W, sum(m[0].height for m in merged[::max(1,len(merged)//6)])))
+y = 0
+for im, _ in merged[::max(1, len(merged)//6)]:
+    sample.paste(im, (0, y)); y += im.height
+pal_img = sample.quantize(colors=PALETTE_COLORS, method=Image.MEDIANCUT)
+
+# Force every near-white palette entry to pure white. MEDIANCUT otherwise picks a
+# faintly tinted off-white (e.g. 248,251,249) for the background bucket, and all
+# the white pixels map to it — leaving the GIF background not-quite-white.
+pal = pal_img.getpalette()
+for i in range(0, len(pal), 3):
+    if min(pal[i], pal[i+1], pal[i+2]) >= 246:
+        pal[i], pal[i+1], pal[i+2] = 255, 255, 255
+pal_img.putpalette(pal)
+
+frames = [im.quantize(palette=pal_img, dither=Image.NONE) for im, _ in merged]
+durations = [d for _, d in merged]
+
+frames[0].save(
+    OUT, save_all=True, append_images=frames[1:],
+    duration=durations, loop=0, optimize=True, disposal=1,
+)
+print("wrote", OUT, f"{os.path.getsize(OUT)/1024:.0f} KB", "frames:", len(frames),
+      "total ms:", sum(durations))
