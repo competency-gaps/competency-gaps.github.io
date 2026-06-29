@@ -88,6 +88,15 @@ for im, _ in merged[::max(1, len(merged)//6)]:
     sample.paste(im, (0, y)); y += im.height
 pal_img = sample.quantize(colors=PALETTE_COLORS, method=Image.MEDIANCUT)
 
+# Force every near-white palette entry to pure white. MEDIANCUT otherwise picks a
+# faintly tinted off-white (e.g. 248,251,249) for the background bucket, and all
+# the white pixels map to it — leaving the GIF background not-quite-white.
+pal = pal_img.getpalette()
+for i in range(0, len(pal), 3):
+    if min(pal[i], pal[i+1], pal[i+2]) >= 246:
+        pal[i], pal[i+1], pal[i+2] = 255, 255, 255
+pal_img.putpalette(pal)
+
 frames = [im.quantize(palette=pal_img, dither=Image.NONE) for im, _ in merged]
 durations = [d for _, d in merged]
 
