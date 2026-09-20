@@ -1,5 +1,47 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=HelveticaNeue:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+/* Helvetica Neue, self-hosted.
+
+   The upstream Clarity template sourced this family from
+     @import url(".../css2?family=HelveticaNeue:ital,wght@...")
+   but Helvetica Neue is not a Google Fonts family, so that request returns
+   HTTP 400 and every rule below that asks for "HelveticaNeue" silently fell
+   back to the browser default sans (DejaVu on Linux, Arial on Windows).
+   Declaring the faces here binds the family name to the real font. */
+@font-face {
+  font-family: "HelveticaNeue";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/HelveticaNeue/helveticaneue_regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "HelveticaNeue";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/HelveticaNeue/helveticaneue_medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "HelveticaNeue";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/HelveticaNeue/helveticaneue_bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "HelveticaNeue";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/HelveticaNeue/helveticaneue_italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "HelveticaNeue";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/HelveticaNeue/helveticaneue_bold_italic.woff2") format("woff2");
+}
 @font-face {
   font-family: "Charter";
   font-style: normal;
@@ -138,21 +180,20 @@ svg {
     font-size: 24px;
     line-height: 1.2;
     padding: 1.5vh 0;
-    font-weight: 600;
+    font-weight: 700;
   }
   h1.title {
-    font-weight: 400;
-    letter-spacing: 0px;
+    font-weight: 500;
     font-size: 26px;
   }
   h2 {
     line-height: 1.2;
     padding: 1.5vh 0;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 18px;
   }
   h3 {
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2;
     padding: 1.5vh 0;
     font-size: 17px;
@@ -170,22 +211,21 @@ svg {
     font-size: 24px;
     line-height: 1.2;
     padding: 2vh 0;
-    font-weight: 600;
+    font-weight: 700;
   }
   h1.title {
     padding: 0 0 1vh;
-    font-weight: 400;
-    letter-spacing: 0px;
+    font-weight: 500;
     font-size: 26px;
   }
   h2 {
     line-height: 1.2;
     padding: 2vh 0;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 18px;
   }
   h3 {
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2;
     padding: 2vh 0;
     font-size: 17px;
@@ -197,22 +237,28 @@ svg {
     padding-left: 12vw;
   }
   a, p, td, th, tr, code, pre, ol, ul, li, div {
-    font-size: 17px;
+    font-size: 16px;
   }
   h1 {
     font-size: 24px;
     line-height: 1.2;
     padding: 1vh 0;
+    font-weight: 700;
   }
   h1.title {
     padding: 0 0 1vh;
+    font-weight: 500;
     font-size: 26px;
   }
   h2 {
+    line-height: 1.2;
     padding: 1vh 0;
+    font-weight: 700;
     font-size: 18px;
   }
   h3 {
+    font-weight: 700;
+    line-height: 1.2;
     padding: 1vh 0;
     font-size: 17px;
   }
@@ -223,22 +269,28 @@ svg {
     padding-left: 15vw;
   }
   a, p, td, th, tr, code, pre, ol, ul, li, div {
-    font-size: 18px;
+    font-size: 17px;
   }
   h1 {
-    font-size: 26px;
+    font-size: 30px;
     line-height: 1.2;
     padding: 1vh 0;
+    font-weight: 700;
   }
   h1.title {
     padding: 0 0 1vh;
+    font-weight: 500;
     font-size: 30px;
   }
   h2 {
+    line-height: 1.2;
     padding: 1vh 0;
-    font-size: 20px;
+    font-weight: 700;
+    font-size: 24px;
   }
   h3 {
+    font-weight: 700;
+    line-height: 1.2;
     padding: 1vh 0;
     font-size: 18px;
   }
@@ -249,24 +301,30 @@ svg {
     padding-left: 18vw;
   }
   a, p, td, th, tr, code, pre, ol, ul, li, div {
-    font-size: 20px;
+    font-size: 18px;
   }
   h1 {
     font-size: 30px;
     line-height: 1.2;
     padding: 1.75vh 0;
+    font-weight: 700;
   }
   h1.title {
     padding: 0 0 1vh;
+    font-weight: 500;
     font-size: 36px;
   }
   h2 {
+    line-height: 1.2;
     padding: 1.5vh 0;
-    font-size: 22px;
+    font-weight: 700;
+    font-size: 24px;
   }
   h3 {
+    font-weight: 700;
+    line-height: 1.2;
     padding: 1.5vh 0;
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 @media screen and (min-width: 2000px) {
@@ -275,22 +333,28 @@ svg {
     padding-left: 22vw;
   }
   a, p, td, th, tr, code, pre, ol, ul, li, div {
-    font-size: 20px;
+    font-size: 18px;
   }
   h1 {
     font-size: 30px;
     line-height: 1.2;
     padding: 1.75vh 0;
+    font-weight: 700;
   }
   h1.title {
     padding: 0 0 1vh;
+    font-weight: 500;
     font-size: 36px;
   }
   h2 {
+    line-height: 1.2;
     padding: 1.5vh 0;
+    font-weight: 700;
     font-size: 24px;
   }
   h3 {
+    font-weight: 700;
+    line-height: 1.2;
     padding: 1.5vh 0;
     font-size: 18px;
   }
@@ -301,22 +365,28 @@ svg {
     padding-left: 24vw;
   }
   a, p, td, th, tr, code, pre, ol, ul, li, div {
-    font-size: 22px;
+    font-size: 20px;
   }
   h1 {
     font-size: 30px;
     line-height: 1.2;
     padding: 1.75vh 0;
+    font-weight: 700;
   }
   h1.title {
     padding: 0 0 1vh;
+    font-weight: 500;
     font-size: 36px;
   }
   h2 {
+    line-height: 1.2;
     padding: 1.5vh 0;
+    font-weight: 700;
     font-size: 24px;
   }
   h3 {
+    font-weight: 700;
+    line-height: 1.2;
     padding: 1.5vh 0;
     font-size: 20px;
   }
@@ -337,7 +407,6 @@ footer span {
 }
 footer p {
   font-style: italic;
-  font-family: "Charter";
 }
 
 @media screen and (min-width: 992px) {
@@ -391,25 +460,23 @@ div.container.blog#first-content div.blog-title .blog-intro {
   padding: 2vh 0;
 }
 div.container.blog#first-content div.blog-title .blog-intro p.author {
-  padding: 4px 0 10px;
-  font-family: "Charter";
+  padding: 4px 0;
+  font-weight: 500;
   font-style: italic;
-  font-weight: 400;
   line-height: 1.2;
-  font-size: 85%;
 }
 div.container.blog#first-content div.blog-title .blog-intro p.abstract {
   font-family: "Charter";
   font-weight: 400;
   padding: 1vh 0;
-  font-size: 85%;
-  line-height: 1.6;
 }
 div.container.blog#first-content div.blog-title .blog-intro .info p {
+  padding: 10px 0 0 0;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: #353535;
-  font-weight: 500;
-  font-size: 85%;
+  font-weight: 600;
+  font-size: 0.95em;
 }
 div.container.blog#first-content div.blog-title .blog-cover {
   position: relative;
@@ -448,13 +515,12 @@ div.container.blog ul li p.text, div.container.blog ol li p.text {
 }
 div.container.blog p.caption {
   padding: 1vh 0;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0px;
-  font-size: 70%;
+  font-size: 90%;
 }
 div.container.blog p.caption b {
-  font-weight: 600 !important;
+  font-weight: 700 !important;
 }
 div.container.blog p.caption a {
   font-size: inherit;
@@ -881,9 +947,9 @@ button, .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65em;
-  font-weight: 500;
-  font-family: "HelveticaNeue", sans-serif;
+  font-size: 0.7em;
+  font-weight: 700;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.075em;
   text-decoration: none;
   text-transform: uppercase;
@@ -993,7 +1059,7 @@ button.project.white, .button.project.white {
 table {
   margin: 0.5vh 0;
   width: 100%;
-  font-family: "HelveticaNeue", sans-serif;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 table a {
   font-size: inherit;
@@ -1005,7 +1071,7 @@ table th b, table td b {
   font-weight: 700;
 }
 table thead {
-  font-weight: 500;
+  font-weight: 700;
 }
 table tbody tr {
   border: solid 1px #404041;
@@ -1093,7 +1159,7 @@ pre code {
 select {
   border-color: transparent;
   border-radius: 5px;
-  padding: 2px 2px;
+  padding: 5px 3px;
   background-color: #ececec;
   display: inline;
   line-height: inherit;
@@ -1159,8 +1225,8 @@ select:after {
 
 .before figcaption,
 .after figcaption {
-  font-size: 70%;
-  font-family: "HelveticaNeue";
+  font-size: 90%;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: transparent;
   color: #353535;
   padding: 8px;
@@ -1489,7 +1555,6 @@ div.container.blog p.caption b {
 }
 
 /* ======================== Button ===================== */
-
 input[type=submit], input[type=reset], input[type=button],
 button, .button {
   font-size: 0.65em;
@@ -1515,7 +1580,7 @@ select {
   font-size: 70%;
 }
 
-/* ======================== Key Takeaways Box ===================== */
+/* ======================== Key Insights Box ===================== */
 .insights-box {
   border: 2px solid #c6c6c6;
   border-radius: 8px;
@@ -1558,3 +1623,5 @@ select {
 .hover-image-container:hover .hover-image-hover {
   opacity: 1;
 }
+
+/*# sourceMappingURL=main_free.css.map */
