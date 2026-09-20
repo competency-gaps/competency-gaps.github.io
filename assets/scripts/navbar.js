@@ -4,8 +4,22 @@ document.addEventListener('DOMContentLoaded', function() {
         .nav-container {
             position: fixed;
             z-index: 1000;
+            /* frosted glass: blur what is behind, then a soft drop shadow and a
+               1px inner highlight so the panel keeps an edge on light figures */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+        }
+
+        /* The page reset in main_free.css names ul and li directly, which beats
+           inheritance, so every label in the panel has to be named too. */
+        .nav-container,
+        .nav-container .nav-list,
+        .nav-container .nav-item,
+        .nav-container .current-section,
+        .nav-container .nav-list li {
+            font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
         /* Desktop styles */
@@ -60,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: block;
                 flex-grow: 1;
                 font-size: 14px;
-                font-family: "HelveticaNeue", sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -101,12 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             .nav-header {
                 display: none !important;
-            }
-
-            @media (min-width: 768px) {
-                .nav-header {
-                    display: none;
-                }
             }
 
             .nav-list {
@@ -172,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-size: 14px;
                 font-weight: 500;
                 color: #000;
-                font-family: "HelveticaNeue", sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -182,6 +188,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .nav-close {
                 display: none;
                 cursor: pointer;
+            }
+
+            @media (min-width: 768px) {
+                .nav-header {
+                    display: none;
+                }
             }
 
             .expanded .nav-close {
@@ -246,15 +258,17 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.body.appendChild(nav);
 
+    // Get all h1 and h2 elements within container blog main and populate the navbar
     const h1Elements = Array.from(document.querySelectorAll('.container.blog.main h1'));
     const navList = nav.querySelector('.nav-list');
-
+    
     function resetNavbarState() {
         nav.classList.remove('expanded');
         document.body.style.overflow = '';
     }
 
     h1Elements.forEach((h1) => {
+        // Add h1 element
         const h1Item = document.createElement('li');
         h1Item.className = 'nav-item h1';
         h1Item.textContent = h1.textContent.trim();
@@ -266,10 +280,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         navList.appendChild(h1Item);
 
+        // Find all h2 elements until the next h1
         let nextElement = h1.nextElementSibling;
         while (nextElement && nextElement.tagName !== 'H1') {
             if (nextElement.tagName === 'H2') {
-                const h2Element = nextElement;
+                const h2Element = nextElement; // Store reference for closure
                 const h2Item = document.createElement('li');
                 h2Item.className = 'nav-item h2';
                 h2Item.textContent = h2Element.textContent.trim();
@@ -285,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Collapse button handling for desktop
     const collapseBtn = nav.querySelector('.nav-collapse');
     collapseBtn.addEventListener('click', () => {
         if (window.innerWidth >= 768) {
@@ -292,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Mobile navigation toggle
     const navHeader = nav.querySelector('.nav-header');
     const closeBtn = nav.querySelector('.nav-close');
 
@@ -302,17 +319,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+
+    // Scroll handling
     let lastScrollTop = 0;
     let ticking = false;
 
     function updateNavbar() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
         const isMobile = window.innerWidth < 768;
-        const scrollPosition = window.scrollY + 10;
 
+        // Find the active section based on page segments
         let activeH1 = null;
         let activeH2 = null;
+        const scrollPosition = window.scrollY + 10; // Add small offset for better detection
 
+        // Find active H1 section
         h1Elements.forEach((h1, index) => {
             const currentPos = h1.offsetTop;
             const nextH1 = h1Elements[index + 1];
@@ -320,17 +343,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (scrollPosition >= currentPos && scrollPosition < nextPos) {
                 activeH1 = h1;
-
+                
+                // Find active H2 within this H1 section
                 let nextElement = h1.nextElementSibling;
                 while (nextElement && (nextH1 === null || nextElement !== nextH1)) {
                     if (nextElement.tagName === 'H2') {
                         const h2Pos = nextElement.offsetTop;
+                        let nextH2Pos;
+                        
+                        // Find the next position to compare against
                         let tempNext = nextElement.nextElementSibling;
                         while (tempNext && tempNext.tagName !== 'H2' && tempNext !== nextH1) {
                             tempNext = tempNext.nextElementSibling;
                         }
-
-                        let nextH2Pos;
+                        
                         if (tempNext && tempNext.tagName === 'H2') {
                             nextH2Pos = tempNext.offsetTop;
                         } else if (nextH1) {
@@ -348,9 +374,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Update active states and section displays
         const navItems = nav.querySelectorAll('.nav-item');
         const currentSections = nav.querySelectorAll('.current-section');
-
+        
         if (activeH1) {
             navItems.forEach((item) => {
                 if ((item.classList.contains('h1') && activeH1.textContent.trim() === item.textContent) ||
@@ -361,14 +388,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            const displayText = activeH2
+            // Update all current section displays
+            const displayText = activeH2 
                 ? `${activeH1.textContent.trim()} > ${activeH2.textContent.trim()}`
                 : activeH1.textContent.trim();
-
+                
             currentSections.forEach(section => {
                 section.textContent = displayText;
             });
-
+            
             nav.classList.add('has-active');
         } else {
             navItems.forEach(item => item.classList.remove('active'));
@@ -378,9 +406,11 @@ document.addEventListener('DOMContentLoaded', function() {
             nav.classList.remove('has-active');
         }
 
+        // Special handling for visibility
         const firstH1 = h1Elements[0];
         const firstH1Passed = firstH1 && window.scrollY + 10 >= firstH1.offsetTop;
-
+        
+        // Handle visibility
         if (isMobile) {
             if (!nav.classList.contains('expanded')) {
                 if (!firstH1Passed) {
